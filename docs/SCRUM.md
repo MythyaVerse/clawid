@@ -89,19 +89,19 @@
 
 | ID | Task | Story | Status | Notes |
 |----|------|-------|--------|-------|
-| T1 | Implement Ed25519 keypair generation | US-1 | ⬜ | Use @noble/ed25519 |
-| T2 | Implement DID generation (did:key) | US-1 | ⬜ | Multibase encoding |
-| T3 | Create ~/.clawid directory + save keypair | US-1 | ⬜ | |
-| T4 | Implement SHA256 hashing of zip | US-2 | ⬜ | Hash raw bytes |
-| T5 | Implement Ed25519 signing | US-2 | ⬜ | |
-| T6 | Generate .clawid-sig.json output | US-2 | ⬜ | Follow spec format |
-| T7 | Implement signature verification | US-3 | ⬜ | |
-| T8 | Implement hash verification | US-3 | ⬜ | |
-| T9 | Implement tiered output display | US-3 | ⬜ | Colors, exit codes |
-| T10 | Build landing page UI | US-4 | ✅ | Basic structure done |
+| T1 | Implement Ed25519 keypair generation | US-1 | ✅ | @noble/ed25519 |
+| T2 | Implement DID generation (did:key) | US-1 | ✅ | Multibase encoding |
+| T3 | Create ~/.clawid directory + save keypair | US-1 | ✅ | keypair.json |
+| T4 | Implement SHA256 hashing of zip | US-2 | ✅ | Hash raw bytes |
+| T5 | Implement Ed25519 signing | US-2 | ✅ | |
+| T6 | Generate .clawid-sig.json output | US-2 | ✅ | Follows spec |
+| T7 | Implement signature verification | US-3 | ✅ | |
+| T8 | Implement hash verification | US-3 | ✅ | |
+| T9 | Implement tiered output display | US-3 | ✅ | Colors, exit codes |
+| T10 | Build landing page UI | US-4 | ✅ | Basic structure |
 | T11 | Add waitlist form (Tally) | US-4 | ⬜ | |
-| T12 | Deploy to Vercel | US-4 | ⬜ | Project linked |
-| T13 | Build CLI for production | US-5 | ⬜ | tsup build |
+| T12 | Deploy to Vercel | US-4 | ✅ | clawid.vercel.app |
+| T13 | Build CLI for production | US-5 | ✅ | tsup build |
 | T14 | Publish to npm | US-5 | ⬜ | @clawid/cli |
 | T15 | Write README with demo | US-5 | ⬜ | Include GIF |
 
