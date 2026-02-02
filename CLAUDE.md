@@ -143,9 +143,9 @@ This section tracks tools, MCP servers, skills, and integrations specific to THI
 |-------------|--------|-----------|-------|
 | GitHub Repo | ✅ Connected | - | MythyaVerse/clawid |
 | npm Registry | ✅ Connected | `/test/npm` | Auth as: binarycache-mv |
-| Vercel Hosting | ✅ Linked | `/test/env` | mythya-verse/clawid |
-| GitHub API | ⬜ Pending | `/test/github` | Need: GITHUB_TOKEN |
-| npm Org | ⬜ Pending | - | Need: @clawid org |
+| Vercel Hosting | ✅ Live | `/test/env` | https://clawid.vercel.app |
+| GitHub API | ⬜ Optional | `/test/github` | For publisher gist verification |
+| npm Org | ✅ Created | - | @clawid |
 | Supabase DB | ⬜ Week 2+ | `/test/supabase` | For skill registry |
 
 ### Tool Update Rules

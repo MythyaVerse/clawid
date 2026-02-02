@@ -38,9 +38,9 @@
 | Service | Purpose | Status | Account |
 |---------|---------|--------|---------|
 | GitHub | Code hosting | ✅ Ready | MythyaVerse/clawid |
-| npm | Package registry | ✅ Connected | binarycache-mv (need @clawid org) |
-| Vercel | Web hosting | ✅ Linked | mythya-verse/clawid |
-| GitHub API | Gist verification | ⬜ Pending | Need GITHUB_TOKEN |
+| npm | Package registry | ✅ Connected | binarycache-mv + @clawid org |
+| Vercel | Web hosting | ✅ Live | https://clawid.vercel.app |
+| GitHub API | Gist verification | ⬜ Optional | For publisher identity proofs |
 | Waitlist (Tally) | Signups | ⬜ Pending | - |
 
 ## Database
