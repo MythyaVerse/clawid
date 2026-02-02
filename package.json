@@ -1,0 +1,27 @@
+{
+  "name": "clawid",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cryptographic verification for AI agent skills",
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint",
+    "cli": "pnpm --filter @clawid/cli"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "verification",
+    "cryptography",
+    "did",
+    "mcp"
+  ],
+  "author": "ClawID",
+  "license": "MIT",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}
