@@ -384,12 +384,11 @@ Touch only what is necessary.
 
 ## 📁 Documentation Contract
 
-This repository has exactly seven documentation files:
+This repository has exactly six documentation files:
 
 | File                 | Purpose                           |
 | -------------------- | --------------------------------- |
 | CLAUDE.md            | AI rules and constraints          |
-| docs/PROJECT-PLAN.md | Original plan from user (intake)  |
 | docs/AI-CONTEXT.md   | Single source of truth for status |
 | docs/ARCHITECTURE.md | Technical design                  |
 | docs/AUDIT-REPORT.md | Verification                      |
@@ -397,6 +396,8 @@ This repository has exactly seven documentation files:
 | docs/TESTING.md      | Testing strategy                  |
 
 Do not create additional documentation files.
+
+Note: Project plans are kept locally and NOT committed to git.
 
 ---
 

@@ -39,3 +39,6 @@ coverage/
 *.tmp
 *.temp
 .vercel
+docs/PROJECT-PLAN.md
+*.docx
+ClawID_*.docx
