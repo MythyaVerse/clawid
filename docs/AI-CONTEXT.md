@@ -2,7 +2,7 @@
 
 ## Project Snapshot
 - **Purpose:** ClawID - Cryptographic verification for AI agent skills/plugins. Provides integrity and provenance verification (NOT safety audits).
-- **Current State:** SPRINT 1 - Building Day 1 MVP
+- **Current State:** ✅ SPRINT 1 COMPLETE - Day 1 MVP shipped
 - **Key Entry Points:** `packages/cli/src/index.ts`, `apps/web/app/page.tsx`
 
 ## How to Run
@@ -78,7 +78,18 @@ clawid/
 ```
 
 ## Known Issues and Fixes
-(None yet)
+
+### Vercel Monorepo Deployment
+- **Symptom:** "No Next.js version detected" or 404 errors on production
+- **Cause:** Vercel default assumes root is the app; monorepo has apps/web subdirectory
+- **Fix:** Set Root Directory to `apps/web` in Vercel dashboard + add vercel.json with `installCommand: "cd ../.. && pnpm install"`
+- **Prevention:** Always configure Root Directory for monorepo deployments
+
+### npm 2FA Publishing
+- **Symptom:** 403 error "2FA required" when publishing
+- **Cause:** npm Publish tokens require 2FA by default
+- **Fix:** Create Automation token type OR enable "Require two-factor authentication for write" bypass
+- **Prevention:** Use Automation tokens for CI/CD publishing
 
 ## Operational Gotchas
 - **NEVER claim "safe" or "secure"** - only "Integrity Verified" and "Publisher Verified"
@@ -89,43 +100,43 @@ clawid/
   - Project initialized
   - Plan verified (ERC-8004, did:key confirmed valid)
   - Env files created
-  - Awaiting logistics setup (GitHub, npm, Vercel)
+  - ✅ Sprint 1 COMPLETE:
+    - CLI commands: init, sign, verify all working
+    - npm package published: @clawid/cli@0.1.0
+    - Landing page live: https://clawid.vercel.app
+    - Waitlist form, feature cards, safety disclaimer deployed
+  - Removed plan docs from GitHub (added to .gitignore)
 
 ---
 
 ## HANDOFF (for the next agent)
 
 ### Current Objective
-Complete logistics setup, then create SCRUM.md and begin Sprint 1
+Sprint 1 COMPLETE. Ready for Sprint 2 (Publishers & Integration)
 
-### What I Changed
-- Created `/docs/PROJECT-PLAN.md` (converted from docx)
-- Created `/docs/AI-CONTEXT.md` (this file)
-- Created `/.env.local` and `/apps/web/.env.local`
-- Created `/.env.example` and `/.gitignore`
-- Set up monorepo structure (pnpm workspace)
-- Created `/packages/cli` - CLI tool skeleton
-- Created `/apps/web` - Next.js landing page with test pages
-- Linked Vercel project
-- Verified npm token connectivity ✅
+### What Was Delivered (Sprint 1)
+- ✅ `clawid init` - generates Ed25519 keypair + DID, saves to ~/.clawid/keypair.json
+- ✅ `clawid sign <path.zip>` - SHA256 hash + Ed25519 signature → .clawid-sig.json
+- ✅ `clawid verify <path.zip>` - tiered output (Publisher Verified / Unknown Publisher / Failed)
+- ✅ Landing page live at https://clawid.vercel.app
+- ✅ npm package published: @clawid/cli@0.1.0
 
-### Commands I Ran
-- `git init` + `git remote add origin`
-- `pnpm install` (all dependencies installed)
-- `pnpm --filter @clawid/web dev` (dev server running on :3001)
+### Key Files
+- `packages/cli/src/lib/identity.ts` - keypair generation, DID encoding
+- `packages/cli/src/lib/signing.ts` - hash + sign logic
+- `packages/cli/src/lib/verification.ts` - verify logic + tiered output
+- `apps/web/app/page.tsx` - landing page with waitlist
+- `apps/web/vercel.json` - monorepo deployment config
 
 ### Current Blockers
-Waiting for user:
-1. ⬜ Create GITHUB_TOKEN (for gist verification)
-2. ⬜ Create @clawid org on npm (for publishing)
+None - Sprint 1 complete
 
-### What to Do Next
-1. [ ] User adds GITHUB_TOKEN to .env.local
-2. [ ] User creates @clawid npm organization
-3. [ ] Verify GitHub API test page passes
-4. [ ] Push initial commit to GitHub
-5. [ ] Create SCRUM.md with Sprint 1 tasks
-6. [ ] Begin CLI implementation (init, sign, verify commands)
+### What to Do Next (Sprint 2)
+1. [ ] User writes LinkedIn + X launch posts (manual action)
+2. [ ] Publisher onboarding guide
+3. [ ] GitHub gist identity proof verification
+4. [ ] OpenClaw hook for auto-verification
+5. [ ] `clawid wrap` command
 
 ### If Time Is Tight, Do This First
-Get GITHUB_TOKEN set - then we can push to GitHub and create SCRUM.md
+User: Write and post the launch announcement (LinkedIn + X)
