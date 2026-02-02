@@ -2,15 +2,16 @@
 
 ## Project Snapshot
 - **Purpose:** ClawID - Cryptographic verification for AI agent skills/plugins. Provides integrity and provenance verification (NOT safety audits).
-- **Current State:** INITIALIZING - Setting up logistics
-- **Key Entry Points:** TBD (CLI + Landing Page)
+- **Current State:** SPRINT 1 - Building Day 1 MVP
+- **Key Entry Points:** `packages/cli/src/index.ts`, `apps/web/app/page.tsx`
 
 ## How to Run
-- **Install:** `pnpm install` (TBD)
-- **Dev:** `pnpm dev` (TBD)
-- **Build:** `pnpm build` (TBD)
-- **Test:** `pnpm test` (TBD)
-- **Lint/Format:** `pnpm lint` (TBD)
+- **Install:** `pnpm install`
+- **Dev (web):** `pnpm --filter @clawid/web dev`
+- **Dev (cli):** `pnpm --filter @clawid/cli dev`
+- **Build:** `pnpm build`
+- **Test:** `pnpm test`
+- **Lint/Format:** `pnpm lint`
 
 ## Environment & Configuration
 
