@@ -1,8 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "pnpm --filter @clawid/web build",
-  "devCommand": "pnpm --filter @clawid/web dev",
-  "installCommand": "pnpm install",
-  "outputDirectory": "apps/web/.next",
-  "framework": null
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/web/package.json",
+      "use": "@vercel/next",
+      "config": {
+        "installCommand": "cd ../.. && pnpm install",
+        "buildCommand": "pnpm build"
+      }
+    }
+  ]
 }
