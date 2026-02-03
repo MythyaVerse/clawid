@@ -5,7 +5,7 @@
 | Sprint | Theme | Duration | Status |
 |--------|-------|----------|--------|
 | Sprint 1 | Ship Day 1 MVP | Day 1 | ✅ Complete |
-| Sprint 2 | Development Consolidation | Days 2-7 | ⬜ Ready |
+| Sprint 2 | Development Consolidation | Days 2-7 | ✅ Complete |
 
 > **Note:** Marketing/outreach tasks deferred. Moltbook integration deferred (service unavailable).
 
@@ -321,22 +321,26 @@
 
 - [x] GitHub identity proof verification working
 - [x] `clawid proof github` generates valid proof template
-- [ ] At least one real publisher has "Publisher Verified" status (needs real gist)
+- [x] At least one real publisher has "Publisher Verified" status (@binarycache via gist)
 - [x] Web verification page functional at /verify
 - [x] All P0 and P1 tasks complete
+- [x] @clawid/cli@0.2.0 published to npm
+- [x] Deployed to Vercel at https://clawid.dev
+- [x] E2E publisher verification tested successfully
 
 ---
 
-### Deferred (Not in Sprint 2)
+### Deferred (Future Sprints)
 
-| Feature | Reason |
-|---------|--------|
-| Moltbook OAuth integration | Service unavailable |
-| OpenClaw hook integration | Requires publisher adoption first |
-| On-chain registry (ERC-8004) | Week 4+ per plan |
-| TEE attestation | Future scope |
-| US-11: Key rotation/revocation | P2 priority |
-| US-12: Supabase registry | P2 priority |
+| Feature | Reason | Target |
+|---------|--------|--------|
+| T37: Shareable receipt URLs | P2 priority | Sprint 3 |
+| US-11: Key rotation/revocation | P2 priority | Sprint 3 |
+| US-12: Supabase registry | P2 priority | Sprint 3 |
+| Moltbook OAuth integration | Service unavailable | TBD |
+| OpenClaw hook integration | Requires publisher adoption first | TBD |
+| On-chain registry (ERC-8004) | Week 4+ per plan | Sprint 4+ |
+| TEE attestation | Future scope | TBD |
 
 ---
 
@@ -346,6 +350,11 @@
 |--------|---------|-----------|----------|
 | 1 | 15 | 15 | 15 |
 | 2 | 32 | 21 (P0+P1) | 21 |
+
+**Sprint 2 Deployment:**
+- npm: @clawid/cli@0.2.0 ✅
+- Vercel: https://clawid.dev ✅
+- GitHub Gist: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a ✅
 
 ---
 

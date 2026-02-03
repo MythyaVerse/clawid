@@ -2,8 +2,8 @@
 
 ## Project Snapshot
 - **Purpose:** ClawID - Cryptographic verification for AI agent skills/plugins. Provides integrity and provenance verification (NOT safety audits).
-- **Current State:** ✅ SPRINT 1 COMPLETE - Day 1 MVP shipped
-- **Key Entry Points:** `packages/cli/src/index.ts`, `apps/web/app/page.tsx`
+- **Current State:** ✅ SPRINT 2 COMPLETE - Full publisher verification working
+- **Key Entry Points:** `packages/cli/src/index.ts`, `apps/web/app/page.tsx`, `apps/web/app/verify/page.tsx`
 
 ## How to Run
 - **Install:** `pnpm install`
@@ -18,8 +18,8 @@
 ### Required Env Vars (Day 1)
 | Variable | Purpose | Status |
 |----------|---------|--------|
-| `GITHUB_TOKEN` | Verify publisher gists | ⬜ Not set |
-| `NPM_TOKEN` | Publish @clawid/cli | ✅ Set (binarycache-mv) |
+| `GITHUB_TOKEN` | Verify publisher gists | ✅ Set |
+| `NPM_TOKEN` | Publish @clawid/cli | ✅ Set (automation token) |
 | `NODE_ENV` | Environment flag | ✅ Set (development) |
 | `NEXT_PUBLIC_APP_URL` | Web app URL | ✅ Set (localhost:3000) |
 
@@ -38,10 +38,10 @@
 | Service | Purpose | Status | Account |
 |---------|---------|--------|---------|
 | GitHub | Code hosting | ✅ Ready | MythyaVerse/clawid |
-| npm | Package registry | ✅ Connected | binarycache-mv + @clawid org |
+| npm | Package registry | ✅ Published | @clawid/cli@0.2.0 |
 | Vercel | Web hosting | ✅ Live | https://clawid.dev |
-| GitHub API | Gist verification | ⬜ Optional | For publisher identity proofs |
-| Waitlist (Tally) | Signups | ⬜ Pending | - |
+| GitHub API | Gist verification | ✅ Working | GITHUB_TOKEN configured |
+| Waitlist (Tally) | Signups | ✅ Configured | Email form on landing page |
 
 ## Database
 - **Day 1:** No database needed (CLI is local-only)
@@ -104,7 +104,7 @@ clawid/
   - Removed plan docs from GitHub (added to .gitignore)
 
 - 2026-02-03:
-  - ✅ Sprint 2 P0+P1 COMPLETE:
+  - ✅ Sprint 2 COMPLETE:
     - `clawid proof github/domain/add/remove/show` commands
     - GitHub gist proof verification (fetches and validates)
     - Domain .well-known proof verification
@@ -112,13 +112,17 @@ clawid/
     - `clawid wrap install/verify` commands for remote skills
     - Web verification page at /verify (browser-side crypto)
     - 52 tests passing (42 CLI + 10 web)
+    - Published @clawid/cli@0.2.0 to npm
+    - Deployed to Vercel at https://clawid.dev
+    - Created real GitHub gist: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a
+    - E2E publisher verification tested successfully (shows "Publisher Verified (github: @binarycache)")
 
 ---
 
 ## HANDOFF (for the next agent)
 
 ### Current Objective
-Sprint 2 P0+P1 COMPLETE. Ready for deployment and testing.
+Sprint 2 COMPLETE. All P0+P1 tasks deployed and E2E tested.
 
 ### What Was Delivered (Sprint 2)
 - ✅ `clawid proof github` - generates gist content template
@@ -131,8 +135,11 @@ Sprint 2 P0+P1 COMPLETE. Ready for deployment and testing.
 - ✅ `clawid wrap install <url>` - download + verify + prepare for install
 - ✅ `clawid wrap verify <url>` - download + verify + cleanup
 - ✅ Web /verify page - browser-based verification with drag-drop upload
+- ✅ @clawid/cli@0.2.0 published to npm
+- ✅ Deployed to Vercel at https://clawid.dev
+- ✅ Real GitHub gist created and tested: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a
 
-### Key Files (New)
+### Key Files
 - `packages/cli/src/lib/proof.ts` - proof generation and parsing
 - `packages/cli/src/lib/proof-verification.ts` - online proof verification
 - `packages/cli/src/lib/wrap.ts` - remote skill download/verify
@@ -143,21 +150,26 @@ Sprint 2 P0+P1 COMPLETE. Ready for deployment and testing.
 - `packages/cli/src/lib/proof-verification.test.ts` - 13 tests
 - `packages/cli/src/lib/wrap.test.ts` - 9 tests
 - `apps/web/app/verify/verify.test.ts` - 10 tests
+- **Total: 52 tests passing**
 
 ### Current Blockers
-None - All P0+P1 tasks complete
+None - All P0+P1 tasks complete and deployed
 
-### What to Do Next
-1. [ ] Deploy updated CLI to npm (@clawid/cli@0.2.0)
-2. [ ] Deploy updated web app to Vercel
-3. [ ] Create real GitHub gist for test publisher verification
-4. [ ] Test end-to-end flow with real gist
-5. [ ] Write launch post (LinkedIn + X) - USER ACTION
+### What to Do Next (USER ACTIONS)
+1. [ ] Write launch post (LinkedIn + X)
+2. [ ] Promote to early adopters for real-world testing
+3. [ ] Gather feedback for Sprint 3 priorities
 
-### Remaining P2 Tasks (Optional)
-- Shareable verification receipt URLs
-- Key rotation and revocation (US-11)
-- Supabase registry + /registry page (US-12)
+### Remaining P2 Tasks (Optional - Sprint 3+)
+- T37: Shareable verification receipt URLs
+- US-11: Key rotation and revocation (T38-T41)
+- US-12: Supabase registry + /registry page (T42-T47)
 
-### If Time Is Tight, Do This First
-Deploy to npm and Vercel, then test with a real GitHub gist.
+### Verified Publisher Identity
+- GitHub handle: `binarycache`
+- DID: `did:key:z6MkwTCtz6NewTuV2MJsHvhrQew8Lp7uC1W7Syvg97WsAGjZ`
+- Public key: `fc931e2c3c0a729fd8c931634ad032d5e648b5dc5e66aecc090f32a1398844e8`
+- Proof gist: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a
+
+### If Time Is Tight
+The core product is complete. Focus on marketing and user acquisition.
