@@ -34,7 +34,7 @@ ClawID solves this by providing:
 | **GitHub Identity Proof** | Verify publisher via public gist |
 | **Domain Identity Proof** | Verify publisher via `.well-known/clawid.json` |
 | **Remote Skill Verification** | Download and verify skills from URLs |
-| **Web Verifier** | Browser-based verification at [clawid.vercel.app/verify](https://clawid.vercel.app/verify) |
+| **Web Verifier** | Browser-based verification at [clawid.dev/verify](https://clawid.dev/verify) |
 | **Offline Mode** | Skip online proof verification with `--offline` |
 
 ## Quick Start
@@ -147,7 +147,7 @@ Once added, all your signatures will include the proof and verifiers can confirm
 
 ## Web Verification
 
-Visit [clawid.vercel.app/verify](https://clawid.vercel.app/verify) to verify skills in your browser:
+Visit [clawid.dev/verify](https://clawid.dev/verify) to verify skills in your browser:
 
 1. Upload the skill `.zip` file
 2. Upload the `.clawid-sig.json` signature file
@@ -273,10 +273,10 @@ pnpm build
 
 ## Links
 
-- **Website**: [clawid.vercel.app](https://clawid.vercel.app)
+- **Website**: [clawid.dev](https://clawid.dev)
 - **npm**: [@clawid/cli](https://www.npmjs.com/package/@clawid/cli)
 - **GitHub**: [MythyaVerse/clawid](https://github.com/MythyaVerse/clawid)
 
 ## License
 
-MIT © [ClawID](https://clawid.vercel.app)
+MIT © [ClawID](https://clawid.dev)

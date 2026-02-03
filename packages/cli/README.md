@@ -170,8 +170,8 @@ Out of scope. We verify the published bundle, not what it might download at runt
 
 ## Links
 
-- **Website**: [clawid.vercel.app](https://clawid.vercel.app)
-- **Web Verifier**: [clawid.vercel.app/verify](https://clawid.vercel.app/verify)
+- **Website**: [clawid.dev](https://clawid.dev)
+- **Web Verifier**: [clawid.dev/verify](https://clawid.dev/verify)
 - **GitHub**: [MythyaVerse/clawid](https://github.com/MythyaVerse/clawid)
 
 ## License

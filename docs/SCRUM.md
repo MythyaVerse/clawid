@@ -100,7 +100,7 @@
 | T9 | Implement tiered output display | US-3 | ✅ | Colors, exit codes |
 | T10 | Build landing page UI | US-4 | ✅ | Basic structure |
 | T11 | Add waitlist form (Tally) | US-4 | ✅ | Email form added |
-| T12 | Deploy to Vercel | US-4 | ✅ | clawid.vercel.app |
+| T12 | Deploy to Vercel | US-4 | ✅ | clawid.dev |
 | T13 | Build CLI for production | US-5 | ✅ | tsup build |
 | T14 | Publish to npm | US-5 | ✅ | @clawid/cli@0.1.0 |
 | T15 | Write README with demo | US-5 | ✅ | Full docs |
@@ -112,7 +112,7 @@
 - [x] `clawid init` generates identity
 - [x] `clawid sign ./test.zip` produces valid signature
 - [x] `clawid verify ./test.zip` validates correctly
-- [x] Landing page live at clawid.vercel.app
+- [x] Landing page live at clawid.dev
 - [x] npm package installable via `npx @clawid/cli`
 - [ ] Launch post written (LinkedIn + X) ← **YOUR ACTION**
 
