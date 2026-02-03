@@ -100,43 +100,64 @@ clawid/
   - Project initialized
   - Plan verified (ERC-8004, did:key confirmed valid)
   - Env files created
-  - ✅ Sprint 1 COMPLETE:
-    - CLI commands: init, sign, verify all working
-    - npm package published: @clawid/cli@0.1.0
-    - Landing page live: https://clawid.vercel.app
-    - Waitlist form, feature cards, safety disclaimer deployed
+  - ✅ Sprint 1 COMPLETE
   - Removed plan docs from GitHub (added to .gitignore)
+
+- 2026-02-03:
+  - ✅ Sprint 2 P0+P1 COMPLETE:
+    - `clawid proof github/domain/add/remove/show` commands
+    - GitHub gist proof verification (fetches and validates)
+    - Domain .well-known proof verification
+    - `--offline` flag for verification
+    - `clawid wrap install/verify` commands for remote skills
+    - Web verification page at /verify (browser-side crypto)
+    - 52 tests passing (42 CLI + 10 web)
 
 ---
 
 ## HANDOFF (for the next agent)
 
 ### Current Objective
-Sprint 1 COMPLETE. Ready for Sprint 2 (Publishers & Integration)
+Sprint 2 P0+P1 COMPLETE. Ready for deployment and testing.
 
-### What Was Delivered (Sprint 1)
-- ✅ `clawid init` - generates Ed25519 keypair + DID, saves to ~/.clawid/keypair.json
-- ✅ `clawid sign <path.zip>` - SHA256 hash + Ed25519 signature → .clawid-sig.json
-- ✅ `clawid verify <path.zip>` - tiered output (Publisher Verified / Unknown Publisher / Failed)
-- ✅ Landing page live at https://clawid.vercel.app
-- ✅ npm package published: @clawid/cli@0.1.0
+### What Was Delivered (Sprint 2)
+- ✅ `clawid proof github` - generates gist content template
+- ✅ `clawid proof domain [domain]` - generates .well-known content
+- ✅ `clawid proof add <type> <url>` - adds proof to identity
+- ✅ `clawid proof remove/show` - manage identity proofs
+- ✅ GitHub gist verification - fetches gist via API, validates DID match
+- ✅ Domain proof verification - fetches .well-known/clawid.json
+- ✅ `clawid verify --offline` - skip online proof check
+- ✅ `clawid wrap install <url>` - download + verify + prepare for install
+- ✅ `clawid wrap verify <url>` - download + verify + cleanup
+- ✅ Web /verify page - browser-based verification with drag-drop upload
 
-### Key Files
-- `packages/cli/src/lib/identity.ts` - keypair generation, DID encoding
-- `packages/cli/src/lib/signing.ts` - hash + sign logic
-- `packages/cli/src/lib/verification.ts` - verify logic + tiered output
-- `apps/web/app/page.tsx` - landing page with waitlist
-- `apps/web/vercel.json` - monorepo deployment config
+### Key Files (New)
+- `packages/cli/src/lib/proof.ts` - proof generation and parsing
+- `packages/cli/src/lib/proof-verification.ts` - online proof verification
+- `packages/cli/src/lib/wrap.ts` - remote skill download/verify
+- `apps/web/app/verify/page.tsx` - browser verification page
+
+### Test Coverage
+- `packages/cli/src/lib/proof.test.ts` - 20 tests
+- `packages/cli/src/lib/proof-verification.test.ts` - 13 tests
+- `packages/cli/src/lib/wrap.test.ts` - 9 tests
+- `apps/web/app/verify/verify.test.ts` - 10 tests
 
 ### Current Blockers
-None - Sprint 1 complete
+None - All P0+P1 tasks complete
 
-### What to Do Next (Sprint 2)
-1. [ ] User writes LinkedIn + X launch posts (manual action)
-2. [ ] Publisher onboarding guide
-3. [ ] GitHub gist identity proof verification
-4. [ ] OpenClaw hook for auto-verification
-5. [ ] `clawid wrap` command
+### What to Do Next
+1. [ ] Deploy updated CLI to npm (@clawid/cli@0.2.0)
+2. [ ] Deploy updated web app to Vercel
+3. [ ] Create real GitHub gist for test publisher verification
+4. [ ] Test end-to-end flow with real gist
+5. [ ] Write launch post (LinkedIn + X) - USER ACTION
+
+### Remaining P2 Tasks (Optional)
+- Shareable verification receipt URLs
+- Key rotation and revocation (US-11)
+- Supabase registry + /registry page (US-12)
 
 ### If Time Is Tight, Do This First
-User: Write and post the launch announcement (LinkedIn + X)
+Deploy to npm and Vercel, then test with a real GitHub gist.

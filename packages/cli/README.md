@@ -1,8 +1,11 @@
 # @clawid/cli
 
-Cryptographic verification for AI agent skills. Prove integrity and provenance of skill bundles.
+Cryptographic verification for AI agent skills. Prove integrity and provenance of skill bundles with Ed25519 signatures.
 
-> **⚠️ NOT A SAFETY AUDIT** - ClawID verifies that a skill bundle hasn't been tampered with and identifies who signed it. It does NOT audit code for malware or security vulnerabilities.
+> **⚠️ NOT A SAFETY AUDIT** — ClawID verifies that a skill hasn't been tampered with and identifies who signed it. It does NOT audit code for malware.
+
+[![npm version](https://img.shields.io/npm/v/@clawid/cli?style=flat-square&color=667eea)](https://www.npmjs.com/package/@clawid/cli)
+[![license](https://img.shields.io/github/license/MythyaVerse/clawid?style=flat-square)](https://github.com/MythyaVerse/clawid/blob/main/LICENSE)
 
 ## Installation
 
@@ -25,9 +28,6 @@ Creates an Ed25519 keypair and DID at `~/.clawid/keypair.json`:
 ```
 🔑 ClawID Identity Setup
 
-Generating Ed25519 keypair...
-Saving to ~/.clawid/keypair.json...
-
 ✅ Identity created successfully!
 
    DID: did:key:z6MkwTCtz6NewTuV2MJsHvhrQew8Lp7uC1W7Syvg97WsAGjZ
@@ -40,19 +40,7 @@ Saving to ~/.clawid/keypair.json...
 clawid sign my-skill-v1.0.0.zip
 ```
 
-Creates a `.clawid-sig.json` signature file:
-
-```
-📝 ClawID Skill Signing
-
-   Input: my-skill-v1.0.0.zip
-
-✅ Skill signed successfully!
-
-   Hash: sha256:a1b2c3d4...
-   Signer: did:key:z6Mk...
-   Signature: my-skill-v1.0.0.clawid-sig.json
-```
+Creates a `.clawid-sig.json` signature file alongside the zip.
 
 ### 3. Verify a Skill Bundle
 
@@ -60,37 +48,73 @@ Creates a `.clawid-sig.json` signature file:
 clawid verify my-skill-v1.0.0.zip
 ```
 
-Shows verification result:
-
-```
-🔍 ClawID Skill Verification
-
-⚠️ UNKNOWN PUBLISHER
-
-   Integrity: ✓ Hash matches
-   Signature: ✓ Valid
-   Signer: did:key:z6Mk...
-   Identity: ⚠ No proof (review code carefully)
-
-   ⚠️  This is NOT a safety audit.
-```
+Shows tiered verification result.
 
 ## Commands
 
+### Identity Management
+
 | Command | Description |
 |---------|-------------|
-| `clawid init` | Generate a new ClawID identity |
-| `clawid whoami` | Show current identity |
+| `clawid init` | Generate new Ed25519 keypair and DID |
+| `clawid init --force` | Overwrite existing identity |
+| `clawid whoami` | Display current identity |
+
+### Signing & Verification
+
+| Command | Description |
+|---------|-------------|
 | `clawid sign <path.zip>` | Sign a skill bundle |
-| `clawid verify <path.zip>` | Verify a signed skill bundle |
+| `clawid sign <path> -o <output>` | Specify output path |
+| `clawid verify <path.zip>` | Verify a signed skill |
+| `clawid verify <path> --offline` | Skip online proof check |
+| `clawid verify <path> -s <sig>` | Specify signature file |
+
+### Identity Proofs
+
+Prove your identity to show as "Publisher Verified":
+
+| Command | Description |
+|---------|-------------|
+| `clawid proof github` | Generate GitHub gist proof template |
+| `clawid proof domain [domain]` | Generate .well-known proof template |
+| `clawid proof add <type> <url>` | Add proof to identity |
+| `clawid proof remove` | Remove proof from identity |
+| `clawid proof show` | Show current proof configuration |
+
+**Example workflow:**
+
+```bash
+# Generate gist content
+clawid proof github
+# → Copy output to a public GitHub gist named clawid.json
+
+# Add proof to your identity
+clawid proof add github https://gist.github.com/yourname/abc123
+
+# Now your signatures include the proof
+clawid sign my-skill.zip
+# → Verifiers will see "Publisher Verified"
+```
+
+### Remote Skills
+
+Download and verify skills from URLs:
+
+| Command | Description |
+|---------|-------------|
+| `clawid wrap install <url>` | Download, verify, and prepare skill |
+| `clawid wrap install <url> --force` | Install even if unknown publisher |
+| `clawid wrap verify <url>` | Download and verify (cleanup after) |
 
 ## Verification Tiers
 
-| Tier | Meaning |
-|------|---------|
-| ✅ PUBLISHER VERIFIED | Signature valid + identity proven (via GitHub/domain) |
-| ⚠️ UNKNOWN PUBLISHER | Signature valid but signer identity not proven |
-| 🚫 FAILED | Hash mismatch or invalid signature - DO NOT INSTALL |
+| Tier | Icon | Meaning |
+|------|------|---------|
+| Publisher Verified | ✅ | Signature valid + identity proven via GitHub/domain |
+| Integrity Verified | ✅ | Signature valid, proof skipped (offline mode) |
+| Unknown Publisher | ⚠️ | Signature valid but identity not proven |
+| Failed | 🚫 | Hash mismatch or invalid signature |
 
 ## Signature File Format
 
@@ -101,44 +125,54 @@ The `.clawid-sig.json` file contains:
   "version": "1.0",
   "signer": {
     "did": "did:key:z6Mk...",
-    "publicKey": "..."
+    "publicKey": "fc931e2c...",
+    "proof": {
+      "type": "github",
+      "handle": "username",
+      "url": "https://gist.github.com/..."
+    }
   },
   "artifact": {
     "type": "skill-bundle-zip",
-    "hash": "sha256:...",
-    "filename": "my-skill-v1.0.0.zip",
+    "hash": "sha256:a1b2c3d4...",
+    "filename": "my-skill.zip",
     "size": 12345
   },
-  "timestamp": "2026-02-02T10:30:00Z",
-  "signature": "..."
+  "timestamp": "2026-02-03T10:30:00Z",
+  "signature": "e1555fa4..."
 }
 ```
 
 ## CI Integration
 
 Exit codes for CI pipelines:
-- `0` - Verification passed
-- `1` - Verification failed
+
+| Exit Code | Meaning |
+|-----------|---------|
+| `0` | Verification passed |
+| `1` | Verification failed |
 
 ```bash
+# In your CI pipeline
 clawid verify skill.zip || exit 1
 ```
 
 ## FAQ
 
 **Does verified mean safe?**
-No. Verified means the bundle hasn't been tampered with and we know who signed it. You should still review code from unknown publishers.
+No. Verified means the bundle hasn't been tampered with and we know who signed it. Review code from unknown publishers.
 
 **Can attackers sign malware?**
-Yes - that's why we show WHO signed it. Signature proves integrity, not intent.
+Yes — that's why we show WHO signed it. Signature proves integrity, not intent.
 
 **What about dependencies?**
 Out of scope. We verify the published bundle, not what it might download at runtime.
 
 ## Links
 
-- Website: https://clawid.vercel.app
-- GitHub: https://github.com/MythyaVerse/clawid
+- **Website**: [clawid.vercel.app](https://clawid.vercel.app)
+- **Web Verifier**: [clawid.vercel.app/verify](https://clawid.vercel.app/verify)
+- **GitHub**: [MythyaVerse/clawid](https://github.com/MythyaVerse/clawid)
 
 ## License
 

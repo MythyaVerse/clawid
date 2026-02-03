@@ -114,6 +114,34 @@ export default function Home() {
         It does NOT mean the code has been audited for malware.
       </div>
 
+      {/* Verify CTA */}
+      <div style={{
+        background: '#e8f4fd',
+        padding: '24px',
+        borderRadius: '12px',
+        marginBottom: '32px',
+        textAlign: 'center'
+      }}>
+        <h3 style={{ marginTop: 0 }}>🔍 Verify a Skill Online</h3>
+        <p style={{ color: '#666', marginBottom: '16px' }}>
+          Upload a skill bundle and signature to verify integrity in your browser.
+        </p>
+        <a
+          href="/verify"
+          style={{
+            display: 'inline-block',
+            padding: '12px 24px',
+            background: '#667eea',
+            color: 'white',
+            borderRadius: '6px',
+            textDecoration: 'none',
+            fontWeight: 'bold',
+          }}
+        >
+          Open Verifier →
+        </a>
+      </div>
+
       {/* Links */}
       <div style={{ borderTop: '1px solid #eee', paddingTop: '20px' }}>
         <h3>Links</h3>
@@ -128,6 +156,11 @@ export default function Home() {
             <a href="https://www.npmjs.com/package/@clawid/cli" target="_blank" rel="noopener noreferrer"
                style={{ color: '#667eea', textDecoration: 'none' }}>
               npm →
+            </a>
+          </li>
+          <li>
+            <a href="/verify" style={{ color: '#667eea', textDecoration: 'none' }}>
+              Verify →
             </a>
           </li>
           <li>

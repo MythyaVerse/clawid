@@ -1,6 +1,7 @@
 import { existsSync } from 'fs';
 import { hashFile, loadSignature, SignatureFile } from './signing.js';
 import { verifySignature } from './identity.js';
+import { verifyProof, type ProofVerificationResult } from './proof-verification.js';
 
 export type VerificationTier =
   | 'publisher_verified'
@@ -17,7 +18,13 @@ export interface VerificationResult {
   expectedHash: string;
   actualHash: string;
   hasIdentityProof: boolean;
+  proofVerified: boolean;
+  proofResult?: ProofVerificationResult;
   error?: string;
+}
+
+export interface VerifyOptions {
+  offline?: boolean;
 }
 
 /**
@@ -43,7 +50,8 @@ function createSignaturePayload(
  */
 export async function verifySkill(
   zipPath: string,
-  sigPath: string
+  sigPath: string,
+  options: VerifyOptions = {}
 ): Promise<VerificationResult> {
   // Check files exist
   if (!existsSync(zipPath)) {
@@ -115,15 +123,30 @@ export async function verifySkill(
     signatureValid = false;
   }
 
-  // Check for identity proof
+  // Check for identity proof and verify it
   const hasIdentityProof = !!(sigFile.signer as any).proof;
+  let proofVerified = false;
+  let proofResult: ProofVerificationResult | undefined;
+
+  if (hasIdentityProof && sigFile.signer.proof) {
+    proofResult = await verifyProof(
+      sigFile.signer.proof,
+      sigFile.signer.did,
+      sigFile.signer.publicKey,
+      options.offline
+    );
+    proofVerified = proofResult.verified;
+  }
 
   // Determine tier
   let tier: VerificationTier;
   if (!hashMatch || !signatureValid) {
     tier = 'failed';
-  } else if (hasIdentityProof) {
+  } else if (proofVerified) {
     tier = 'publisher_verified';
+  } else if (hasIdentityProof && options.offline) {
+    // In offline mode with proof present, show integrity verified
+    tier = 'integrity_verified';
   } else {
     tier = 'unknown_publisher';
   }
@@ -137,6 +160,8 @@ export async function verifySkill(
     expectedHash,
     actualHash,
     hasIdentityProof,
+    proofVerified,
+    proofResult,
   };
 }
 

@@ -42,3 +42,6 @@ coverage/
 docs/PROJECT-PLAN.md
 *.docx
 ClawID_*.docx
+
+# Test data (example skills)
+test-skills/

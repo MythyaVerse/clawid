@@ -4,6 +4,7 @@ import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
+import type { IdentityProof } from './proof.js';
 
 // Enable synchronous methods for ed25519
 ed.etc.sha512Sync = (...m) => sha512(ed.etc.concatBytes(...m));
@@ -16,6 +17,7 @@ export interface ClawIDIdentity {
   publicKey: string;
   privateKey: string;
   createdAt: string;
+  proof?: IdentityProof;
 }
 
 /**
@@ -163,4 +165,30 @@ export async function verifySignature(
   const signature = hexToBytes(signatureHex);
   const publicKey = hexToBytes(publicKeyHex);
   return await ed.verifyAsync(signature, data, publicKey);
+}
+
+/**
+ * Update identity with a proof
+ */
+export async function updateIdentityProof(proof: IdentityProof): Promise<void> {
+  const identity = await loadIdentity();
+  if (!identity) {
+    throw new Error('No identity found. Run `clawid init` first.');
+  }
+
+  identity.proof = proof;
+  await saveIdentity(identity);
+}
+
+/**
+ * Remove proof from identity
+ */
+export async function removeIdentityProof(): Promise<void> {
+  const identity = await loadIdentity();
+  if (!identity) {
+    throw new Error('No identity found. Run `clawid init` first.');
+  }
+
+  delete identity.proof;
+  await saveIdentity(identity);
 }

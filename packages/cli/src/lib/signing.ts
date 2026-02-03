@@ -109,6 +109,18 @@ export async function signSkill(zipPath: string): Promise<SignatureFile> {
     signature,
   };
 
+  // Include proof if identity has one
+  if (identity.proof) {
+    sigFile.signer.proof = {
+      type: identity.proof.type,
+      handle: identity.proof.handle,
+      url: identity.proof.url,
+    };
+    if (identity.proof.domain) {
+      sigFile.signer.proof.handle = identity.proof.domain;
+    }
+  }
+
   return sigFile;
 }
 
