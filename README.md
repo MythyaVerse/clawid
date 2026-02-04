@@ -10,6 +10,36 @@
 
 > **⚠️ NOT A SAFETY AUDIT** — ClawID verifies that a skill bundle hasn't been tampered with and identifies who signed it. It does NOT audit code for malware or security vulnerabilities.
 
+## What's New in v0.4.0
+
+### Publisher Skill Registry
+ClawID now tracks which skills each publisher has signed. After signing, your skill is registered to the public registry:
+
+```bash
+clawid sign my-skill.zip
+# ✅ Signed successfully
+# 📝 Register this skill to clawid.dev? (Y/n): y
+# ✅ Registered to clawid.dev registry
+```
+
+Query any publisher's signed skills via API:
+```bash
+curl https://clawid.dev/api/v1/publisher/did:key:z6Mk.../skills
+```
+
+Or use the `--register` flag to auto-register:
+```bash
+clawid sign my-skill.zip --register
+```
+
+### Standalone Register Command
+Register previously signed skills:
+```bash
+clawid register my-skill.zip
+```
+
+---
+
 ## What's New in v0.3.0
 
 ### Shareable Verification Receipts
@@ -56,6 +86,7 @@ ClawID solves this by providing:
 |---------|-------------|
 | **Identity Generation** | Ed25519 keypairs with `did:key` format DIDs |
 | **Skill Signing** | SHA256 hash + Ed25519 signature in JSON format |
+| **Skill Registry** | Track and query publisher skills at [clawid.dev](https://clawid.dev) |
 | **Tiered Verification** | Publisher Verified / Unknown Publisher / Failed |
 | **GitHub Identity Proof** | Verify publisher via public gist |
 | **Domain Identity Proof** | Verify publisher via `.well-known/clawid.json` |
@@ -143,8 +174,15 @@ Once added, all your signatures will include the proof and verifiers can confirm
 |---------|-------------|
 | `clawid sign <path.zip>` | Sign a skill bundle |
 | `clawid sign <path> -o <output>` | Specify output path |
+| `clawid sign <path> --register` | Sign and auto-register to registry |
 | `clawid verify <path.zip>` | Verify a signed skill |
 | `clawid verify <path> --offline` | Skip online proof check |
+
+### Registry
+
+| Command | Description |
+|---------|-------------|
+| `clawid register <path.zip>` | Register signed skill to clawid.dev |
 
 ### Identity Proofs
 
