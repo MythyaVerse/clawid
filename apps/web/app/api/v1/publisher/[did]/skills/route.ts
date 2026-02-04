@@ -23,13 +23,11 @@ export const dynamic = 'force-dynamic';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ did: string }> }
+  { params }: { params: { did: string } }
 ) {
   try {
-    // Await params (required in Next.js 14+)
-    const { did: rawDid } = await params;
     // URL decode the DID (colons are encoded as %3A)
-    const did = decodeURIComponent(rawDid);
+    const did = decodeURIComponent(params.did);
 
     // Validate DID format
     if (!did.startsWith('did:key:')) {
