@@ -48,7 +48,6 @@ export async function GET(
       SELECT skill_name, skill_hash, signed_at, source_url
       FROM skills
       WHERE publisher_did = ${did}
-      ORDER BY signed_at DESC
     `;
 
     // For now, we don't have identity verification integrated
