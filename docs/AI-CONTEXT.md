@@ -112,6 +112,21 @@ clawid/
 - **Fix:** Create Automation token type OR enable "Require two-factor authentication for write" bypass
 - **Prevention:** Use Automation tokens for CI/CD publishing
 
+### Neon Serverless ORDER BY Bug
+- **Symptom:** Parameterized queries with `WHERE column = ${param} ORDER BY` return empty results
+- **Cause:** Unknown bug in @neondatabase/serverless when combining parameterized WHERE with ORDER BY
+- **Fix:** Remove ORDER BY from SQL, sort results in JavaScript instead
+- **Prevention:** Always test parameterized queries with ORDER BY; prefer JS sorting for small result sets
+- **Example:**
+  ```typescript
+  // BAD - returns empty results
+  const skills = await sql`SELECT * FROM skills WHERE did = ${did} ORDER BY created_at DESC`;
+
+  // GOOD - works correctly
+  const rawSkills = await sql`SELECT * FROM skills WHERE did = ${did}`;
+  const skills = [...rawSkills].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  ```
+
 ## Operational Gotchas
 - **NEVER claim "safe" or "secure"** - only "Integrity Verified" and "Publisher Verified"
 - Plan says 180K stars but actual is ~63K (update marketing copy)
