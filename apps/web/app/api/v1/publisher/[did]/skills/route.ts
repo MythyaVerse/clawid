@@ -44,12 +44,18 @@ export async function GET(
     await sql`SELECT id, publisher_did FROM skills LIMIT 1`;
 
     // Query skills for this publisher
-    const skills = await sql`
+    // Note: ORDER BY with parameterized WHERE clause causes issues in Neon serverless
+    // Sorting in JavaScript as workaround
+    const rawSkills = await sql`
       SELECT skill_name, skill_hash, signed_at, source_url
       FROM skills
       WHERE publisher_did = ${did}
-      ORDER BY signed_at DESC
     `;
+
+    // Sort by signed_at DESC in JavaScript
+    const skills = [...rawSkills].sort((a, b) =>
+      new Date(b.signed_at).getTime() - new Date(a.signed_at).getTime()
+    );
 
     // For now, we don't have identity verification integrated
     // In the future, this could check against a verified publishers table
