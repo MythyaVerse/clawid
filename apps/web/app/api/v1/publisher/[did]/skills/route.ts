@@ -42,13 +42,27 @@ export async function GET(
     console.log('Looking for DID:', did);
     console.log('DID length:', did.length);
 
-    // Query skills for this publisher
-    const skills = await sql`
+    // Try different query methods for debugging
+    const exactMatch = await sql`
       SELECT skill_name, skill_hash, signed_at, source_url
       FROM skills
       WHERE publisher_did = ${did}
-      ORDER BY signed_at DESC
     `;
+
+    const likeMatch = await sql`
+      SELECT skill_name, skill_hash, signed_at, source_url
+      FROM skills
+      WHERE publisher_did LIKE ${did}
+    `;
+
+    const trimMatch = await sql`
+      SELECT skill_name, skill_hash, signed_at, source_url
+      FROM skills
+      WHERE TRIM(publisher_did) = TRIM(${did})
+    `;
+
+    // Query skills for this publisher
+    const skills = trimMatch;
 
     // Debug: log query details
     console.log('Skills found:', skills.length);
@@ -63,7 +77,9 @@ export async function GET(
         queried_did: did,
         did_length: did.length,
         all_skills_in_db: allSkills,
-        matching_skills: skills.length,
+        exact_match_count: exactMatch.length,
+        like_match_count: likeMatch.length,
+        trim_match_count: trimMatch.length,
       },
       publisher: {
         did,
