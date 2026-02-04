@@ -5,6 +5,7 @@ export default function TestIndex() {
     { name: 'Environment Variables', path: '/test/env', description: 'Check all env vars are set' },
     { name: 'GitHub API', path: '/test/github', description: 'Test GitHub token for gist verification' },
     { name: 'npm Registry', path: '/test/npm', description: 'Test npm token for publishing' },
+    { name: 'Neon Database', path: '/test/neon', description: 'Test PostgreSQL database connection' },
   ];
 
   return (

@@ -121,6 +121,7 @@ This section tracks tools, MCP servers, skills, and integrations specific to THI
 |--------|---------|-----------|
 | `puppeteer` | Browser automation & testing | `puppeteer_navigate`, `puppeteer_screenshot`, `puppeteer_click`, `puppeteer_fill`, `puppeteer_evaluate` |
 | `context7` | Library documentation lookup | `resolve-library-id`, `query-docs` |
+| `Neon` | Serverless Postgres database | `list_projects`, `run_sql`, `create_branch`, `get_connection_string` |
 
 ### Available Skills
 | Skill | Trigger | Purpose |
@@ -146,7 +147,7 @@ This section tracks tools, MCP servers, skills, and integrations specific to THI
 | Vercel Hosting | ✅ Live | `/test/env` | https://clawid.dev |
 | GitHub API | ⬜ Optional | `/test/github` | For publisher gist verification |
 | npm Org | ✅ Created | - | @clawid |
-| Supabase DB | ⬜ Week 2+ | `/test/supabase` | For skill registry |
+| Neon DB | ✅ Connected | `/test/neon` | wild-fire-23032082 (clawid) |
 
 ### Tool Update Rules
 - **New MCP server**: Add to MCP Servers table with purpose and key tools

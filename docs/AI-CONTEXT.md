@@ -42,10 +42,16 @@
 | Vercel | Web hosting | ✅ Live | https://clawid.dev |
 | GitHub API | Gist verification | ✅ Working | GITHUB_TOKEN configured |
 | Waitlist (Tally) | Signups | ✅ Configured | Email form on landing page |
+| Neon | PostgreSQL database | ✅ Connected | wild-fire-23032082 (clawid) |
 
 ## Database
-- **Day 1:** No database needed (CLI is local-only)
-- **Week 2+:** Supabase for skill registry
+- **Provider:** Neon Serverless Postgres
+- **Project:** clawid (wild-fire-23032082)
+- **Database:** neondb
+- **Branch:** production (br-ancient-base-ahc68cp4)
+- **Region:** aws-us-east-1
+- **PostgreSQL:** v17
+- **Status:** ✅ Connected (empty, ready for skill registry schema)
 
 ## Repo Structure (Planned)
 ```
