@@ -40,21 +40,16 @@ export async function GET(
     }
 
     // Query skills for this publisher
-    // WORKAROUND: Neon serverless has severe bugs with parameterized WHERE clauses
-    // Fetch all skills and filter in JavaScript as workaround
-    const allSkills = await sql`
+    // Note: Using Pool-based connection because neon() HTTP client has bugs with result truncation
+    const result = await sql`
       SELECT publisher_did, skill_name, skill_hash, signed_at, source_url
       FROM skills
-      LIMIT 10000
+      WHERE publisher_did = ${did}
+      ORDER BY signed_at DESC
+      LIMIT 1000
     `;
 
-    // Filter to matching publisher in JavaScript
-    const rawSkills = allSkills.filter((s: any) => s.publisher_did === did);
-
-    // Sort by signed_at DESC in JavaScript
-    const skills = [...rawSkills].sort((a, b) =>
-      new Date(b.signed_at).getTime() - new Date(a.signed_at).getTime()
-    );
+    const skills = result.rows;
 
     // For now, we don't have identity verification integrated
     // In the future, this could check against a verified publishers table
@@ -65,7 +60,7 @@ export async function GET(
         did,
         identity_verified: identityVerified,
       },
-      skills: skills.map(s => ({
+      skills: skills.map((s: any) => ({
         name: s.skill_name,
         hash: s.skill_hash,
         signed_at: s.signed_at,

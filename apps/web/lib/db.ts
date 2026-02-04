@@ -1,9 +1,27 @@
-import { neon } from '@neondatabase/serverless';
+import { Pool } from '@neondatabase/serverless';
 
-// Create a singleton SQL client
-const sql = neon(process.env.DATABASE_URL!);
+// Create a pool-based SQL client (WebSocket connection, more reliable than HTTP)
+const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
 
-export { sql };
+// Wrapper function to match the template literal API
+async function sql(strings: TemplateStringsArray, ...values: any[]) {
+  // Build query from template literal
+  let query = '';
+  const params: any[] = [];
+
+  for (let i = 0; i < strings.length; i++) {
+    query += strings[i];
+    if (i < values.length) {
+      params.push(values[i]);
+      query += `$${params.length}`;
+    }
+  }
+
+  const result = await pool.query(query, params);
+  return result;
+}
+
+export { sql, pool };
 
 // Types for the skills table
 export interface Skill {

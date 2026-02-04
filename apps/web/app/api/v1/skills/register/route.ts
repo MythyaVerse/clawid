@@ -66,13 +66,17 @@ export async function POST(request: NextRequest) {
         RETURNING id, skill_name, skill_hash, signed_at
       `;
 
+      // Handle both fullResults mode and regular mode
+      const rows = (result as any).rows || result;
+      const insertedRow = rows[0];
+
       return NextResponse.json({
         success: true,
         skill: {
-          id: result[0].id,
-          name: result[0].skill_name,
-          hash: result[0].skill_hash,
-          signed_at: result[0].signed_at,
+          id: insertedRow.id,
+          name: insertedRow.skill_name,
+          hash: insertedRow.skill_hash,
+          signed_at: insertedRow.signed_at,
         },
         message: 'Skill registered successfully',
       }, { status: 201 });

@@ -112,19 +112,25 @@ clawid/
 - **Fix:** Create Automation token type OR enable "Require two-factor authentication for write" bypass
 - **Prevention:** Use Automation tokens for CI/CD publishing
 
-### Neon Serverless Parameterized Query Bug
-- **Symptom:** Parameterized queries with `WHERE column = ${param}` may return only 1 row instead of all matching rows
-- **Cause:** Unknown bug in @neondatabase/serverless with parameterized WHERE clauses
-- **Fix:** Add `LIMIT 1000` (or appropriate limit) to force full result set; sort in JavaScript instead of ORDER BY
-- **Prevention:** Always add explicit LIMIT to parameterized queries; test with multiple matching rows
+### Neon Serverless HTTP Client Bug (CRITICAL)
+- **Symptom:** The `neon()` HTTP client truncates query results, returning fewer rows than exist in the database
+- **Cause:** Bug in @neondatabase/serverless HTTP client (the `neon()` function)
+- **Fix:** Use `Pool` class instead of `neon()` function for reliable results
+- **Prevention:** Always use Pool-based connections for any queries that return multiple rows
 - **Example:**
   ```typescript
-  // BAD - may return only 1 row or empty results
-  const skills = await sql`SELECT * FROM skills WHERE did = ${did} ORDER BY created_at DESC`;
+  // BAD - neon() HTTP client truncates results
+  import { neon } from '@neondatabase/serverless';
+  const sql = neon(process.env.DATABASE_URL);
+  const skills = await sql`SELECT * FROM skills WHERE did = ${did}`;
+  // May only return 9 rows when database has 11!
 
-  // GOOD - returns all matching rows
-  const rawSkills = await sql`SELECT * FROM skills WHERE did = ${did} LIMIT 1000`;
-  const skills = [...rawSkills].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  // GOOD - Pool uses WebSocket, returns all rows correctly
+  import { Pool } from '@neondatabase/serverless';
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const result = await pool.query('SELECT * FROM skills WHERE publisher_did = $1', [did]);
+  const skills = result.rows;
+  // Returns all matching rows reliably
   ```
 
 ## Operational Gotchas
