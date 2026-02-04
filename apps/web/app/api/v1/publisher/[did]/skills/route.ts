@@ -36,6 +36,12 @@ export async function GET(
       );
     }
 
+    // Debug: first check all skills to verify connection
+    const allSkills = await sql`SELECT id, publisher_did FROM skills LIMIT 5`;
+    console.log('All skills in DB:', JSON.stringify(allSkills));
+    console.log('Looking for DID:', did);
+    console.log('DID length:', did.length);
+
     // Query skills for this publisher
     const skills = await sql`
       SELECT skill_name, skill_hash, signed_at, source_url
@@ -45,14 +51,20 @@ export async function GET(
     `;
 
     // Debug: log query details
-    console.log('Query DID:', did);
     console.log('Skills found:', skills.length);
 
     // For now, we don't have identity verification integrated
     // In the future, this could check against a verified publishers table
     const identityVerified = false;
 
-    const response: PublisherSkillsResponse = {
+    // Temporarily return debug info
+    return NextResponse.json({
+      debug: {
+        queried_did: did,
+        did_length: did.length,
+        all_skills_in_db: allSkills,
+        matching_skills: skills.length,
+      },
       publisher: {
         did,
         identity_verified: identityVerified,
@@ -64,9 +76,7 @@ export async function GET(
         source_url: s.source_url || undefined,
       })),
       total: skills.length,
-    };
-
-    return NextResponse.json(response);
+    });
 
   } catch (error: any) {
     console.error('Get publisher skills error:', error);
