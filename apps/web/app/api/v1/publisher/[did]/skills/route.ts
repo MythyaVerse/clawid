@@ -8,26 +8,16 @@ export const dynamic = 'force-dynamic';
  * GET /api/v1/publisher/:did/skills
  *
  * Get all skills registered by a publisher.
- *
- * Response:
- * {
- *   "publisher": {
- *     "did": "did:key:z6Mk...",
- *     "identity_verified": true/false
- *   },
- *   "skills": [
- *     { "name": "...", "hash": "sha256:...", "signed_at": "...", "source_url": "..." }
- *   ],
- *   "total": 1
- * }
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { did: string } }
+  { params }: { params: Promise<{ did: string }> }
 ) {
   try {
+    // Await params (required in Next.js 14+)
+    const { did: rawDid } = await params;
     // URL decode the DID (colons are encoded as %3A)
-    const did = decodeURIComponent(params.did);
+    const did = decodeURIComponent(rawDid);
 
     // Validate DID format
     if (!did.startsWith('did:key:')) {
@@ -37,36 +27,39 @@ export async function GET(
       );
     }
 
-    // Warmup query (seems needed for Neon serverless)
-    await sql`SELECT 1`;
+    // Debug: first check all skills to verify connection
+    const allSkills = await sql`SELECT id, publisher_did FROM skills LIMIT 5`;
 
-    // Query skills for this publisher
-    const skills = await sql`
+    // Try different query methods for debugging
+    const exactMatch = await sql`
       SELECT skill_name, skill_hash, signed_at, source_url
       FROM skills
       WHERE publisher_did = ${did}
-      ORDER BY signed_at DESC
     `;
 
     // For now, we don't have identity verification integrated
-    // In the future, this could check against a verified publishers table
     const identityVerified = false;
 
-    const response: PublisherSkillsResponse = {
+    // Return with debug info
+    return NextResponse.json({
+      debug: {
+        queried_did: did,
+        did_length: did.length,
+        all_skills_in_db: allSkills,
+        exact_match_count: exactMatch.length,
+      },
       publisher: {
         did,
         identity_verified: identityVerified,
       },
-      skills: skills.map(s => ({
+      skills: exactMatch.map(s => ({
         name: s.skill_name,
         hash: s.skill_hash,
         signed_at: s.signed_at,
         source_url: s.source_url || undefined,
       })),
-      total: skills.length,
-    };
-
-    return NextResponse.json(response, {
+      total: exactMatch.length,
+    }, {
       headers: {
         'Cache-Control': 'no-store, max-age=0',
       },
