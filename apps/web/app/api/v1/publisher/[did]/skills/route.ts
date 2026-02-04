@@ -36,51 +36,19 @@ export async function GET(
       );
     }
 
-    // Debug: first check all skills to verify connection
-    const allSkills = await sql`SELECT id, publisher_did FROM skills LIMIT 5`;
-    console.log('All skills in DB:', JSON.stringify(allSkills));
-    console.log('Looking for DID:', did);
-    console.log('DID length:', did.length);
-
-    // Try different query methods for debugging
-    const exactMatch = await sql`
+    // Query skills for this publisher
+    const skills = await sql`
       SELECT skill_name, skill_hash, signed_at, source_url
       FROM skills
       WHERE publisher_did = ${did}
+      ORDER BY signed_at DESC
     `;
-
-    const likeMatch = await sql`
-      SELECT skill_name, skill_hash, signed_at, source_url
-      FROM skills
-      WHERE publisher_did LIKE ${did}
-    `;
-
-    const trimMatch = await sql`
-      SELECT skill_name, skill_hash, signed_at, source_url
-      FROM skills
-      WHERE TRIM(publisher_did) = TRIM(${did})
-    `;
-
-    // Query skills for this publisher
-    const skills = trimMatch;
-
-    // Debug: log query details
-    console.log('Skills found:', skills.length);
 
     // For now, we don't have identity verification integrated
     // In the future, this could check against a verified publishers table
     const identityVerified = false;
 
-    // Temporarily return debug info
-    return NextResponse.json({
-      debug: {
-        queried_did: did,
-        did_length: did.length,
-        all_skills_in_db: allSkills,
-        exact_match_count: exactMatch.length,
-        like_match_count: likeMatch.length,
-        trim_match_count: trimMatch.length,
-      },
+    const response: PublisherSkillsResponse = {
       publisher: {
         did,
         identity_verified: identityVerified,
@@ -92,7 +60,9 @@ export async function GET(
         source_url: s.source_url || undefined,
       })),
       total: skills.length,
-    });
+    };
+
+    return NextResponse.json(response);
 
   } catch (error: any) {
     console.error('Get publisher skills error:', error);
