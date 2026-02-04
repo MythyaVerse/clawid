@@ -20,11 +20,13 @@ import { sql, type PublisherSkillsResponse } from '@/lib/db';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { did: string } }
+  { params }: { params: Promise<{ did: string }> }
 ) {
   try {
+    // Await params (required in Next.js 14+)
+    const { did: rawDid } = await params;
     // URL decode the DID (colons are encoded as %3A)
-    const did = decodeURIComponent(params.did);
+    const did = decodeURIComponent(rawDid);
 
     // Validate DID format
     if (!did.startsWith('did:key:')) {
