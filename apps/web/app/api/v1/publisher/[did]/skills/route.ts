@@ -1,0 +1,72 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { sql, type PublisherSkillsResponse } from '@/lib/db';
+
+/**
+ * GET /api/v1/publisher/:did/skills
+ *
+ * Get all skills registered by a publisher.
+ *
+ * Response:
+ * {
+ *   "publisher": {
+ *     "did": "did:key:z6Mk...",
+ *     "identity_verified": true/false
+ *   },
+ *   "skills": [
+ *     { "name": "...", "hash": "sha256:...", "signed_at": "...", "source_url": "..." }
+ *   ],
+ *   "total": 1
+ * }
+ */
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { did: string } }
+) {
+  try {
+    // URL decode the DID (colons are encoded as %3A)
+    const did = decodeURIComponent(params.did);
+
+    // Validate DID format
+    if (!did.startsWith('did:key:')) {
+      return NextResponse.json(
+        { error: 'Invalid DID format. Must be did:key:...' },
+        { status: 400 }
+      );
+    }
+
+    // Query skills for this publisher
+    const skills = await sql`
+      SELECT skill_name, skill_hash, signed_at, source_url
+      FROM skills
+      WHERE publisher_did = ${did}
+      ORDER BY signed_at DESC
+    `;
+
+    // For now, we don't have identity verification integrated
+    // In the future, this could check against a verified publishers table
+    const identityVerified = false;
+
+    const response: PublisherSkillsResponse = {
+      publisher: {
+        did,
+        identity_verified: identityVerified,
+      },
+      skills: skills.map(s => ({
+        name: s.skill_name,
+        hash: s.skill_hash,
+        signed_at: s.signed_at,
+        source_url: s.source_url || undefined,
+      })),
+      total: skills.length,
+    };
+
+    return NextResponse.json(response);
+
+  } catch (error: any) {
+    console.error('Get publisher skills error:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch publisher skills', details: error.message },
+      { status: 500 }
+    );
+  }
+}
