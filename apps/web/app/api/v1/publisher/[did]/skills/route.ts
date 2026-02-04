@@ -44,6 +44,10 @@ export async function GET(
       ORDER BY signed_at DESC
     `;
 
+    // Debug: log query details
+    console.log('Query DID:', did);
+    console.log('Skills found:', skills.length);
+
     // For now, we don't have identity verification integrated
     // In the future, this could check against a verified publishers table
     const identityVerified = false;
