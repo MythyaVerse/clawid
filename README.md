@@ -10,6 +10,32 @@
 
 > **⚠️ NOT A SAFETY AUDIT** — ClawID verifies that a skill bundle hasn't been tampered with and identifies who signed it. It does NOT audit code for malware or security vulnerabilities.
 
+## What's New in v0.3.0
+
+### Shareable Verification Receipts
+After verifying a skill on [clawid.dev/verify](https://clawid.dev/verify), click **"Copy Verification Link"** to share a URL that shows your verification result to others — no file upload required.
+
+### Library API for Integration
+Use ClawID programmatically in MCP servers, package managers, and other tools:
+
+```typescript
+import { verifySkill, downloadAndVerify } from '@clawid/cli';
+
+// Verify local files
+const result = await verifySkill('./skill.zip', './skill.clawid-sig.json');
+if (result.canInstall) {
+  console.log('Safe to install');
+}
+
+// Verify remote skill
+const remote = await downloadAndVerify('https://example.com/skill.zip');
+if (remote.canInstall) {
+  // Proceed with installation
+}
+```
+
+See the [CLI README](packages/cli/README.md#library-api) for full API documentation.
+
 ## Why ClawID?
 
 AI agent ecosystems like OpenClaw and Moltbook are growing rapidly, but they face a critical trust gap:
@@ -35,6 +61,8 @@ ClawID solves this by providing:
 | **Domain Identity Proof** | Verify publisher via `.well-known/clawid.json` |
 | **Remote Skill Verification** | Download and verify skills from URLs |
 | **Web Verifier** | Browser-based verification at [clawid.dev/verify](https://clawid.dev/verify) |
+| **Shareable Receipts** | Share verification results via URL (no re-upload needed) |
+| **Library API** | Programmatic verification for MCP servers and tools |
 | **Offline Mode** | Skip online proof verification with `--offline` |
 
 ## Quick Start
@@ -208,13 +236,14 @@ clawid/
 │       │   │   ├── proof.ts         # Identity proof generation
 │       │   │   ├── proof-verification.ts  # Online proof verification
 │       │   │   └── wrap.ts          # Remote skill download
+│       │   ├── api.ts       # Library API for programmatic use
 │       │   └── index.ts     # CLI commands
 │       └── package.json
 ├── apps/
 │   └── web/                 # Next.js landing page + verifier
 │       └── app/
 │           ├── page.tsx     # Landing page
-│           └── verify/      # Browser verification
+│           └── verify/      # Browser verification + shareable receipts
 └── docs/                    # Documentation
 ```
 
