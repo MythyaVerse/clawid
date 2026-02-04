@@ -173,7 +173,7 @@ None - Sprint 3 complete, ready for deploy
 
 ### What to Do Next
 1. [x] Deploy web app to Vercel - DONE (https://www.clawid.dev)
-2. [ ] Publish @clawid/cli@0.3.0 to npm (NPM_TOKEN expired, needs refresh)
+2. [x] Publish @clawid/cli@0.3.0 to npm - DONE
 3. [ ] Test shareable receipt URLs on production
 
 ### Remaining Tasks (Sprint 4+)
