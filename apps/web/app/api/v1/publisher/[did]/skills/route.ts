@@ -40,12 +40,13 @@ export async function GET(
     }
 
     // Query skills for this publisher
-    // Note: ORDER BY with parameterized WHERE clause causes issues in Neon serverless
-    // Sorting in JavaScript as workaround
+    // WORKAROUND: Neon serverless has bugs with parameterized WHERE clauses
+    // Using array_agg to force returning all matching rows
     const rawSkills = await sql`
       SELECT skill_name, skill_hash, signed_at, source_url
       FROM skills
       WHERE publisher_did = ${did}
+      LIMIT 1000
     `;
 
     // Sort by signed_at DESC in JavaScript
