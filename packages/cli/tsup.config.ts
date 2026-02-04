@@ -1,16 +1,22 @@
 import { defineConfig } from 'tsup';
 
-export default defineConfig({
-  entry: ['src/index.ts', 'src/api.ts'],
-  format: ['esm'],
-  dts: true,
-  clean: true,
-  shims: true,
-  banner: ({ entryPoint }) => {
-    // Only add shebang to CLI entry point
-    if (entryPoint === 'src/index.ts') {
-      return { js: '#!/usr/bin/env node' };
-    }
-    return {};
+export default defineConfig([
+  // CLI entry point with shebang
+  {
+    entry: { index: 'src/index.ts' },
+    format: ['esm'],
+    dts: true,
+    clean: true,
+    shims: true,
+    banner: {
+      js: '#!/usr/bin/env node',
+    },
   },
-});
+  // API entry point without shebang
+  {
+    entry: { api: 'src/api.ts' },
+    format: ['esm'],
+    dts: true,
+    shims: true,
+  },
+]);

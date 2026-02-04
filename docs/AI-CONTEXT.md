@@ -112,18 +112,18 @@ clawid/
 - **Fix:** Create Automation token type OR enable "Require two-factor authentication for write" bypass
 - **Prevention:** Use Automation tokens for CI/CD publishing
 
-### Neon Serverless ORDER BY Bug
-- **Symptom:** Parameterized queries with `WHERE column = ${param} ORDER BY` return empty results
-- **Cause:** Unknown bug in @neondatabase/serverless when combining parameterized WHERE with ORDER BY
-- **Fix:** Remove ORDER BY from SQL, sort results in JavaScript instead
-- **Prevention:** Always test parameterized queries with ORDER BY; prefer JS sorting for small result sets
+### Neon Serverless Parameterized Query Bug
+- **Symptom:** Parameterized queries with `WHERE column = ${param}` may return only 1 row instead of all matching rows
+- **Cause:** Unknown bug in @neondatabase/serverless with parameterized WHERE clauses
+- **Fix:** Add `LIMIT 1000` (or appropriate limit) to force full result set; sort in JavaScript instead of ORDER BY
+- **Prevention:** Always add explicit LIMIT to parameterized queries; test with multiple matching rows
 - **Example:**
   ```typescript
-  // BAD - returns empty results
+  // BAD - may return only 1 row or empty results
   const skills = await sql`SELECT * FROM skills WHERE did = ${did} ORDER BY created_at DESC`;
 
-  // GOOD - works correctly
-  const rawSkills = await sql`SELECT * FROM skills WHERE did = ${did}`;
+  // GOOD - returns all matching rows
+  const rawSkills = await sql`SELECT * FROM skills WHERE did = ${did} LIMIT 1000`;
   const skills = [...rawSkills].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   ```
 
