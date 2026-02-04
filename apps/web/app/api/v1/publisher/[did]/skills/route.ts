@@ -39,6 +39,9 @@ export async function GET(
       );
     }
 
+    // Warmup query (seems needed for Neon serverless)
+    await sql`SELECT 1`;
+
     // Query skills for this publisher
     const skills = await sql`
       SELECT skill_name, skill_hash, signed_at, source_url
