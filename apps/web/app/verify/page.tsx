@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import * as ed from '@noble/ed25519';
 import { sha512 } from '@noble/hashes/sha512';
 import { sha256 } from '@noble/hashes/sha256';
+import {
+  generateReceiptUrl,
+  parseReceiptFromUrl,
+  receiptToResult,
+  type ReceiptData,
+} from './receipt';
 
 // Enable synchronous methods for ed25519
 ed.etc.sha512Sync = (...m: Uint8Array[]) => sha512(ed.etc.concatBytes(...m));
@@ -135,9 +141,27 @@ function getTierStyles(tier: VerificationTier): { bg: string; color: string; ico
 export default function VerifyPage() {
   const [zipFile, setZipFile] = useState<File | null>(null);
   const [sigFile, setSigFile] = useState<File | null>(null);
+  const [sigData, setSigData] = useState<SignatureFile | null>(null);
   const [result, setResult] = useState<VerificationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [receiptMode, setReceiptMode] = useState(false);
+  const [receiptData, setReceiptData] = useState<ReceiptData | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // Parse receipt from URL hash on load
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const hash = window.location.hash;
+    const receipt = parseReceiptFromUrl(hash);
+
+    if (receipt) {
+      setReceiptMode(true);
+      setReceiptData(receipt);
+      setResult(receiptToResult(receipt));
+    }
+  }, []);
 
   const handleZipDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -172,15 +196,57 @@ export default function VerifyPage() {
     try {
       // Parse signature file
       const sigText = await sigFile.text();
-      const sigData = JSON.parse(sigText) as SignatureFile;
+      const parsedSigData = JSON.parse(sigText) as SignatureFile;
+      setSigData(parsedSigData);
 
       // Verify
-      const verificationResult = await verifyInBrowser(zipFile, sigData);
+      const verificationResult = await verifyInBrowser(zipFile, parsedSigData);
       setResult(verificationResult);
     } catch (err) {
       setError(`Verification failed: ${(err as Error).message}`);
     } finally {
       setVerifying(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!result || !sigData) return;
+
+    const url = generateReceiptUrl(
+      result,
+      sigData.artifact.filename,
+      sigData.timestamp,
+      sigData.signature
+    );
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 3000);
+    } catch {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 3000);
+    }
+  };
+
+  const handleVerifyNew = () => {
+    setReceiptMode(false);
+    setReceiptData(null);
+    setResult(null);
+    setZipFile(null);
+    setSigFile(null);
+    setSigData(null);
+    setError(null);
+    // Clear URL hash
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', window.location.pathname);
     }
   };
 
@@ -194,21 +260,41 @@ export default function VerifyPage() {
           <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>ClawID</h1>
         </a>
         <h2 style={{ fontSize: '1.5rem', color: '#666', margin: 0, fontWeight: 'normal' }}>
-          Skill Verification
+          {receiptMode ? 'Verification Receipt' : 'Skill Verification'}
         </h2>
       </div>
 
+      {/* Receipt Mode Notice */}
+      {receiptMode && receiptData && (
+        <div style={{
+          background: '#e7f3ff',
+          border: '1px solid #b6d4fe',
+          padding: '16px 20px',
+          borderRadius: '8px',
+          marginBottom: '24px',
+        }}>
+          <strong>📋 Verification Receipt</strong>
+          <p style={{ margin: '8px 0 0 0', fontSize: '0.95rem' }}>
+            This is a saved verification result for <code>{receiptData.filename}</code>.
+            <br />
+            Files were not re-verified. To verify again, upload the original files below.
+          </p>
+        </div>
+      )}
+
       {/* Instructions */}
-      <div style={{
-        background: '#f8f9fa',
-        padding: '20px',
-        borderRadius: '8px',
-        marginBottom: '24px'
-      }}>
-        <p style={{ margin: 0 }}>
-          Upload a skill bundle (<code>.zip</code>) and its signature file (<code>.clawid-sig.json</code>) to verify integrity.
-        </p>
-      </div>
+      {!receiptMode && (
+        <div style={{
+          background: '#f8f9fa',
+          padding: '20px',
+          borderRadius: '8px',
+          marginBottom: '24px'
+        }}>
+          <p style={{ margin: 0 }}>
+            Upload a skill bundle (<code>.zip</code>) and its signature file (<code>.clawid-sig.json</code>) to verify integrity.
+          </p>
+        </div>
+      )}
 
       {/* File Upload Areas */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
@@ -361,12 +447,63 @@ export default function VerifyPage() {
                 <strong>Identity:</strong> ⚠️ No proof (review code carefully)
               </div>
             )}
+            {receiptMode && receiptData && (
+              <div>
+                <strong>Verified:</strong>{' '}
+                {new Date(receiptData.timestamp).toLocaleString()}
+              </div>
+            )}
           </div>
 
           {!result.hashMatch && (
             <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(0,0,0,0.1)', borderRadius: '6px' }}>
               <div><strong>Expected:</strong> {result.expectedHash}</div>
               <div><strong>Got:</strong> {result.actualHash}</div>
+            </div>
+          )}
+
+          {/* Copy Link button - only show after fresh verification (not in receipt mode) */}
+          {!receiptMode && result.valid && sigData && (
+            <div style={{ marginTop: '16px' }}>
+              <button
+                onClick={handleCopyLink}
+                style={{
+                  padding: '10px 20px',
+                  background: copySuccess ? '#28a745' : '#667eea',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                }}
+              >
+                {copySuccess ? '✓ Link Copied!' : '📋 Copy Verification Link'}
+              </button>
+              {copySuccess && (
+                <span style={{ marginLeft: '12px', fontSize: '0.9rem', opacity: 0.8 }}>
+                  Share this URL to show verification result
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Verify New Skill button - show in receipt mode */}
+          {receiptMode && (
+            <div style={{ marginTop: '16px' }}>
+              <button
+                onClick={handleVerifyNew}
+                style={{
+                  padding: '10px 20px',
+                  background: '#667eea',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                }}
+              >
+                🔍 Verify New Skill
+              </button>
             </div>
           )}
         </div>

@@ -64,6 +64,7 @@ export async function verifySkill(
       expectedHash: '',
       actualHash: '',
       hasIdentityProof: false,
+      proofVerified: false,
       error: `Skill file not found: ${zipPath}`,
     };
   }
@@ -78,6 +79,7 @@ export async function verifySkill(
       expectedHash: '',
       actualHash: '',
       hasIdentityProof: false,
+      proofVerified: false,
       error: `Signature file not found: ${sigPath}`,
     };
   }
@@ -94,6 +96,7 @@ export async function verifySkill(
       expectedHash: '',
       actualHash: '',
       hasIdentityProof: false,
+      proofVerified: false,
       error: 'Failed to parse signature file',
     };
   }

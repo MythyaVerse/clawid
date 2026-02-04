@@ -2,8 +2,8 @@
 
 ## Project Snapshot
 - **Purpose:** ClawID - Cryptographic verification for AI agent skills/plugins. Provides integrity and provenance verification (NOT safety audits).
-- **Current State:** ✅ SPRINT 2 COMPLETE - Full publisher verification working
-- **Key Entry Points:** `packages/cli/src/index.ts`, `apps/web/app/page.tsx`, `apps/web/app/verify/page.tsx`
+- **Current State:** ✅ SPRINT 3 COMPLETE - Shareable receipts + library API
+- **Key Entry Points:** `packages/cli/src/index.ts`, `packages/cli/src/api.ts`, `apps/web/app/page.tsx`, `apps/web/app/verify/page.tsx`
 
 ## How to Run
 - **Install:** `pnpm install`
@@ -38,7 +38,7 @@
 | Service | Purpose | Status | Account |
 |---------|---------|--------|---------|
 | GitHub | Code hosting | ✅ Ready | MythyaVerse/clawid |
-| npm | Package registry | ✅ Published | @clawid/cli@0.2.0 |
+| npm | Package registry | ✅ Published | @clawid/cli@0.3.0 |
 | Vercel | Web hosting | ✅ Live | https://clawid.dev |
 | GitHub API | Gist verification | ✅ Working | GITHUB_TOKEN configured |
 | Waitlist (Tally) | Signups | ✅ Configured | Email form on landing page |
@@ -117,51 +117,66 @@ clawid/
     - Created real GitHub gist: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a
     - E2E publisher verification tested successfully (shows "Publisher Verified (github: @binarycache)")
 
+- 2026-02-04:
+  - ✅ Sprint 3 COMPLETE:
+    - T37: Shareable verification receipt URLs on /verify page
+    - Copy Verification Link button after successful verification
+    - Receipt mode displays saved result when opened via shared URL
+    - Library API: `verifySkill()` and `downloadAndVerify()` functions exported
+    - `canInstall` boolean added to verification results
+    - API documented in README with usage examples
+    - 77 tests passing (55 CLI + 22 web)
+    - @clawid/cli@0.3.0 ready for npm publish
+
 ---
 
 ## HANDOFF (for the next agent)
 
 ### Current Objective
-Sprint 2 COMPLETE. All P0+P1 tasks deployed and E2E tested.
+Sprint 3 COMPLETE. Shareable receipts and library API implemented.
 
-### What Was Delivered (Sprint 2)
-- ✅ `clawid proof github` - generates gist content template
-- ✅ `clawid proof domain [domain]` - generates .well-known content
-- ✅ `clawid proof add <type> <url>` - adds proof to identity
-- ✅ `clawid proof remove/show` - manage identity proofs
-- ✅ GitHub gist verification - fetches gist via API, validates DID match
-- ✅ Domain proof verification - fetches .well-known/clawid.json
-- ✅ `clawid verify --offline` - skip online proof check
-- ✅ `clawid wrap install <url>` - download + verify + prepare for install
-- ✅ `clawid wrap verify <url>` - download + verify + cleanup
-- ✅ Web /verify page - browser-based verification with drag-drop upload
-- ✅ @clawid/cli@0.2.0 published to npm
-- ✅ Deployed to Vercel at https://clawid.dev
-- ✅ Real GitHub gist created and tested: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a
+### What Was Delivered (Sprint 3)
+- ✅ **T37: Shareable Verification Receipt URLs**
+  - `generateReceiptUrl()` creates shareable URL with verification data in hash
+  - "Copy Verification Link" button appears after successful verification
+  - Receipt mode displays when opening shared URL (shows saved result)
+  - `parseReceiptFromUrl()` parses URL hash to restore receipt
+  - 12 new tests for receipt URL generation/parsing
 
-### Key Files
-- `packages/cli/src/lib/proof.ts` - proof generation and parsing
-- `packages/cli/src/lib/proof-verification.ts` - online proof verification
-- `packages/cli/src/lib/wrap.ts` - remote skill download/verify
-- `apps/web/app/verify/page.tsx` - browser verification page
+- ✅ **Library API for Hook Integration**
+  - `packages/cli/src/api.ts` - clean entry point for programmatic use
+  - `verifySkill(zipPath, sigPath, options)` - verify local files
+  - `downloadAndVerify(url, sigUrl, options)` - download and verify remote
+  - `canInstall` boolean added to VerificationResult
+  - Types exported: VerificationResult, VerificationTier, VerifyOptions
+  - Package exports updated in package.json
+  - 13 new API tests
+  - README updated with library usage documentation
+
+### Key Files (Sprint 3)
+- `apps/web/app/verify/receipt.ts` - receipt URL utilities
+- `apps/web/app/verify/page.tsx` - updated with receipt mode UI
+- `packages/cli/src/api.ts` - library API entry point
+- `packages/cli/src/lib/verification.ts` - added proofVerified to error returns
+- `packages/cli/README.md` - library API documentation
 
 ### Test Coverage
+- `packages/cli/src/api.test.ts` - 13 tests (NEW)
 - `packages/cli/src/lib/proof.test.ts` - 20 tests
 - `packages/cli/src/lib/proof-verification.test.ts` - 13 tests
 - `packages/cli/src/lib/wrap.test.ts` - 9 tests
-- `apps/web/app/verify/verify.test.ts` - 10 tests
-- **Total: 52 tests passing**
+- `apps/web/app/verify/verify.test.ts` - 22 tests (+12 new)
+- **Total: 77 tests passing**
 
 ### Current Blockers
-None - All P0+P1 tasks complete and deployed
+None - Sprint 3 complete, ready for deploy
 
-### What to Do Next (USER ACTIONS)
-1. [ ] Write launch post (LinkedIn + X)
-2. [ ] Promote to early adopters for real-world testing
-3. [ ] Gather feedback for Sprint 3 priorities
+### What to Do Next
+1. [ ] Deploy web app to Vercel
+2. [ ] Publish @clawid/cli@0.3.0 to npm
+3. [ ] Test shareable receipt URLs on production
 
-### Remaining P2 Tasks (Optional - Sprint 3+)
-- T37: Shareable verification receipt URLs
+### Remaining Tasks (Sprint 4+)
 - US-11: Key rotation and revocation (T38-T41)
 - US-12: Supabase registry + /registry page (T42-T47)
 
@@ -171,5 +186,22 @@ None - All P0+P1 tasks complete and deployed
 - Public key: `fc931e2c3c0a729fd8c931634ad032d5e648b5dc5e66aecc090f32a1398844e8`
 - Proof gist: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a
 
+### Library API Usage Example
+```typescript
+import { verifySkill, downloadAndVerify } from '@clawid/cli';
+
+// Verify local files
+const result = await verifySkill('./skill.zip', './skill.clawid-sig.json');
+if (result.canInstall) {
+  console.log('Safe to install');
+}
+
+// Verify remote skill
+const remote = await downloadAndVerify('https://example.com/skill.zip');
+if (remote.canInstall) {
+  // Install from remote.zipPath
+}
+```
+
 ### If Time Is Tight
-The core product is complete. Focus on marketing and user acquisition.
+Core functionality complete. Deploy and publish first, then test manually.

@@ -32,6 +32,18 @@ import {
   canInstall,
 } from './lib/wrap.js';
 
+// Re-export library API for programmatic use
+export {
+  verifySkill,
+  downloadAndVerify,
+  inferSignatureUrl,
+  type VerificationResult,
+  type VerificationTier,
+  type VerifyOptions,
+  type DownloadAndVerifyOptions,
+  type DownloadAndVerifyResult,
+} from './api.js';
+
 const program = new Command();
 
 program

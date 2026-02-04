@@ -1,9 +1,20 @@
 {
   "name": "@clawid/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "CLI tool for signing and verifying AI agent skills",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./dist/api.d.ts",
+      "import": "./dist/api.js"
+    }
+  },
   "bin": {
     "clawid": "dist/index.js"
   },

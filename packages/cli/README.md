@@ -143,6 +143,66 @@ The `.clawid-sig.json` file contains:
 }
 ```
 
+## Library API
+
+ClawID can be used as a library for integrating verification into other tools (MCP servers, package managers, installers):
+
+```typescript
+import { verifySkill, downloadAndVerify } from '@clawid/cli';
+
+// Verify local files
+const result = await verifySkill('./skill.zip', './skill.clawid-sig.json');
+console.log(result.tier);        // 'publisher_verified'
+console.log(result.canInstall);  // true
+
+// Verify remote skill
+const remote = await downloadAndVerify('https://example.com/skill.zip');
+if (remote.canInstall) {
+  // Install from remote.zipPath
+}
+
+// Skip online proof verification
+const offline = await verifySkill(zipPath, sigPath, { offline: true });
+```
+
+### Installation Rules
+
+| Tier | canInstall |
+|------|------------|
+| `publisher_verified` | `true` |
+| `integrity_verified` | `true` |
+| `unknown_publisher` | `false` |
+| `failed` | `false` |
+
+Use the `--force` flag in CLI or check `result.valid` to override for `unknown_publisher` tier.
+
+### Types
+
+```typescript
+interface VerificationResult {
+  tier: 'publisher_verified' | 'integrity_verified' | 'unknown_publisher' | 'failed';
+  valid: boolean;
+  hashMatch: boolean;
+  signatureValid: boolean;
+  canInstall: boolean;
+  signerDid: string;
+  hasIdentityProof: boolean;
+  proofVerified: boolean;
+  proof?: {
+    type: 'github' | 'domain';
+    handle: string;
+    verified: boolean;
+  };
+  error?: string;
+}
+
+interface DownloadAndVerifyResult extends VerificationResult {
+  zipPath?: string;     // Path to downloaded file (if keepFiles: true)
+  sigPath?: string;     // Path to signature file
+  downloadError?: string;
+}
+```
+
 ## CI Integration
 
 Exit codes for CI pipelines:
