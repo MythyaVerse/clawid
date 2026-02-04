@@ -172,8 +172,8 @@ Sprint 3 COMPLETE. Shareable receipts and library API implemented.
 None - Sprint 3 complete, ready for deploy
 
 ### What to Do Next
-1. [ ] Deploy web app to Vercel
-2. [ ] Publish @clawid/cli@0.3.0 to npm
+1. [x] Deploy web app to Vercel - DONE (https://www.clawid.dev)
+2. [ ] Publish @clawid/cli@0.3.0 to npm (NPM_TOKEN expired, needs refresh)
 3. [ ] Test shareable receipt URLs on production
 
 ### Remaining Tasks (Sprint 4+)
