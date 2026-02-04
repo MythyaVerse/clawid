@@ -1,6 +1,6 @@
 {
   "name": "@clawid/cli",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "CLI tool for signing and verifying AI agent skills",
   "type": "module",
   "main": "dist/index.js",

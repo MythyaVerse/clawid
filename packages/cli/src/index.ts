@@ -31,6 +31,32 @@ import {
   cleanupDownloads,
   canInstall,
 } from './lib/wrap.js';
+import { registerSkill } from './lib/registry.js';
+import * as readline from 'readline';
+import { basename } from 'path';
+
+/**
+ * Ask a yes/no question via stdin
+ */
+function askYesNo(question: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    // If not interactive, default to no
+    if (!process.stdin.isTTY) {
+      resolve(false);
+      return;
+    }
+
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.toLowerCase().startsWith('y'));
+    });
+  });
+}
 
 // Re-export library API for programmatic use
 export {
@@ -49,7 +75,7 @@ const program = new Command();
 program
   .name('clawid')
   .description('Cryptographic verification for AI agent skills')
-  .version('0.1.0');
+  .version('0.4.0');
 
 program
   .command('init')
@@ -104,6 +130,8 @@ program
   .description('Sign a skill bundle (zip file)')
   .argument('<path>', 'Path to the skill zip file')
   .option('-o, --output <path>', 'Output path for signature file')
+  .option('--register', 'Automatically register to clawid.dev after signing')
+  .option('--no-register-prompt', 'Skip the registration prompt')
   .action(async (zipPath: string, options) => {
     console.log('📝 ClawID Skill Signing\n');
 
@@ -129,6 +157,34 @@ program
       console.log(`   Hash: ${sigFile.artifact.hash}`);
       console.log(`   Signer: ${sigFile.signer.did}`);
       console.log(`   Signature: ${outputPath}`);
+
+      // Registration prompt/auto-register
+      const skillName = basename(zipPath, '.zip');
+      let shouldRegister = options.register === true;
+
+      if (!shouldRegister && options.registerPrompt !== false && process.stdin.isTTY) {
+        console.log('');
+        shouldRegister = await askYesNo('📤 Register this skill to clawid.dev? (y/N) ');
+      }
+
+      if (shouldRegister) {
+        console.log('\n   Registering to clawid.dev...');
+        const result = await registerSkill({
+          publisherDid: sigFile.signer.did,
+          skillName,
+          skillHash: sigFile.artifact.hash,
+          signature: sigFile.signature,
+          signedAt: sigFile.timestamp,
+        });
+
+        if (result.success) {
+          console.log('   ✅ Registered successfully!');
+          console.log(`   View: https://clawid.dev/api/v1/publisher/${encodeURIComponent(sigFile.signer.did)}/skills`);
+        } else {
+          console.log(`   ⚠️  Registration failed: ${result.error}`);
+        }
+      }
+
       console.log(`\n📋 Share the .clawid-sig.json file alongside your skill bundle.`);
     } catch (error) {
       console.log(`\n❌ Signing failed: ${(error as Error).message}`);
@@ -195,6 +251,59 @@ program
       }
     } catch (error) {
       console.log(`❌ Verification failed: ${(error as Error).message}`);
+      process.exit(1);
+    }
+  });
+
+// Register command (standalone)
+program
+  .command('register')
+  .description('Register a signed skill to clawid.dev')
+  .argument('<path>', 'Path to the skill zip file (signature file must exist)')
+  .option('-s, --signature <path>', 'Path to signature file (default: <name>.clawid-sig.json)')
+  .option('-u, --url <url>', 'Source URL where the skill can be downloaded')
+  .action(async (zipPath: string, options) => {
+    console.log('📤 ClawID Skill Registration\n');
+
+    try {
+      const sigPath = options.signature || getSignatureFilePath(zipPath);
+
+      // Load signature file
+      const { loadSignature } = await import('./lib/signing.js');
+      const sigFile = await loadSignature(sigPath);
+
+      if (!sigFile) {
+        console.log(`❌ Signature file not found: ${sigPath}`);
+        console.log('   Sign the skill first: clawid sign <path.zip>');
+        process.exit(1);
+      }
+
+      const skillName = basename(zipPath, '.zip');
+
+      console.log(`   Skill: ${skillName}`);
+      console.log(`   Hash: ${sigFile.artifact.hash}`);
+      console.log(`   Publisher: ${sigFile.signer.did}`);
+
+      console.log('\n   Registering to clawid.dev...');
+
+      const result = await registerSkill({
+        publisherDid: sigFile.signer.did,
+        skillName,
+        skillHash: sigFile.artifact.hash,
+        sourceUrl: options.url,
+        signature: sigFile.signature,
+        signedAt: sigFile.timestamp,
+      });
+
+      if (result.success) {
+        console.log('\n✅ Registered successfully!');
+        console.log(`   View: https://clawid.dev/api/v1/publisher/${encodeURIComponent(sigFile.signer.did)}/skills`);
+      } else {
+        console.log(`\n❌ Registration failed: ${result.error}`);
+        process.exit(1);
+      }
+    } catch (error) {
+      console.log(`\n❌ Error: ${(error as Error).message}`);
       process.exit(1);
     }
   });
