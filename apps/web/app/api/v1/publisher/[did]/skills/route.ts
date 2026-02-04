@@ -40,8 +40,8 @@ export async function GET(
     }
 
     // Warmup query - Neon serverless requires this for parameterized queries to work
-    // See: https://github.com/neondatabase/serverless/issues
-    await sql`SELECT 1 FROM skills LIMIT 1`;
+    // Must query actual columns for the connection to properly initialize
+    await sql`SELECT id, publisher_did FROM skills LIMIT 1`;
 
     // Query skills for this publisher
     const skills = await sql`
