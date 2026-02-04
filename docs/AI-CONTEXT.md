@@ -173,6 +173,10 @@ clawid/
     - Registry client in `packages/cli/src/lib/registry.ts`
     - @clawid/cli@0.4.0 published to npm
     - Deployed to production at https://clawid.dev
+    - **Bug fix:** Neon serverless ORDER BY with parameterized WHERE returns empty results
+      - Root cause: Unknown bug in @neondatabase/serverless driver
+      - Fix: Sort results in JavaScript instead of SQL
+      - Documented in Known Issues section
 
 ---
 
@@ -215,9 +219,12 @@ Sprint 4 COMPLETE. Publisher Skill Registry fully operational.
 None - Sprint 4 complete
 
 ### What to Do Next
-1. [ ] Test CLI registration on production
-2. [ ] Consider adding web UI for browsing publisher skills
-3. [ ] Key rotation and revocation (US-11)
+1. [ ] Consider adding web UI for browsing publisher skills
+2. [ ] Key rotation and revocation (US-11)
+
+### Release Protocol
+**IMPORTANT:** Before any future releases, follow the Release Checklist in `docs/SCRUM.md`.
+All E2E testing must pass before marking a release complete.
 
 ### API Examples
 ```bash

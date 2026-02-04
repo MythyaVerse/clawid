@@ -6,6 +6,8 @@
 |--------|-------|----------|--------|
 | Sprint 1 | Ship Day 1 MVP | Day 1 | ✅ Complete |
 | Sprint 2 | Development Consolidation | Days 2-7 | ✅ Complete |
+| Sprint 3 | Shareable Receipts + Library API | Day 8 | ✅ Complete |
+| Sprint 4 | Publisher Skill Registry | Day 8 | ✅ Complete |
 
 > **Note:** Marketing/outreach tasks deferred. Moltbook integration deferred (service unavailable).
 
@@ -301,7 +303,7 @@
 | T34 | /verify page UI | US-10 | P1 | ✅ |
 | T35 | Browser verification logic | US-10 | P1 | ✅ |
 | T36 | Verification results display | US-10 | P1 | ✅ |
-| T37 | Shareable receipt URL | US-10 | P2 | ⬜ |
+| T37 | Shareable receipt URL | US-10 | P2 | ✅ |
 | T38 | Key rotation | US-11 | P2 | ⬜ |
 | T39 | Key revocation | US-11 | P2 | ⬜ |
 | T40 | Revocation check | US-11 | P2 | ⬜ |
@@ -344,18 +346,105 @@
 
 ---
 
+## Sprint 3: Shareable Receipts + Library API
+
+**Goal:** Enable sharing verification results and programmatic API access
+
+### Completed Tasks
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| T37 | Shareable verification receipt URLs | ✅ | Base64 encoded in URL hash |
+| T48 | Library API (`verifySkill`, `downloadAndVerify`) | ✅ | Exported from @clawid/cli |
+| T49 | `canInstall` boolean in verification result | ✅ | |
+| T50 | API documentation in README | ✅ | |
+| T51 | API unit tests | ✅ | 13 new tests |
+
+### Definition of Done (Sprint 3)
+
+- [x] `/verify` page generates shareable URL after verification
+- [x] Shareable URL displays verification receipt when opened
+- [x] `@clawid/cli` exports `verifySkill()` and `downloadAndVerify()` functions
+- [x] Library API documented in README
+- [x] All tests pass (77 total)
+- [x] @clawid/cli@0.3.0 published to npm
+- [x] Deployed to production
+
+---
+
+## Sprint 4: Publisher Skill Registry
+
+**Goal:** Track which skills each publisher has signed via database-backed API
+
+### Completed Tasks
+
+| ID | Task | Status | Notes |
+|----|------|--------|-------|
+| T52 | Create skills table in Neon database | ✅ | publisher_did, skill_name, skill_hash |
+| T53 | POST /api/v1/skills/register endpoint | ✅ | Register signed skills |
+| T54 | GET /api/v1/publisher/:did/skills endpoint | ✅ | Query publisher skills |
+| T55 | CLI `--register` flag on sign command | ✅ | Auto-register after signing |
+| T56 | CLI standalone `register` command | ✅ | Register previously signed skills |
+| T57 | Fix Neon ORDER BY bug | ✅ | Sort in JS as workaround |
+
+### Definition of Done (Sprint 4)
+
+- [x] Database schema created (skills table)
+- [x] POST endpoint working and tested
+- [x] GET endpoint working and tested
+- [x] CLI registration commands working
+- [x] @clawid/cli@0.4.0 published to npm
+- [x] E2E testing completed on production
+- [x] Bug fix documented in AI-CONTEXT.md
+
+---
+
 ## Velocity Tracking
 
 | Sprint | Planned | Completed | Velocity |
 |--------|---------|-----------|----------|
 | 1 | 15 | 15 | 15 |
 | 2 | 32 | 21 (P0+P1) | 21 |
+| 3 | 5 | 5 | 5 |
+| 4 | 6 | 6 | 6 |
 
-**Sprint 2 Deployment:**
-- npm: @clawid/cli@0.2.0 ✅
-- Vercel: https://clawid.dev ✅
-- GitHub Gist: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a ✅
+**Deployments:**
+- Sprint 1: @clawid/cli@0.1.0 ✅
+- Sprint 2: @clawid/cli@0.2.0 ✅
+- Sprint 3: @clawid/cli@0.3.0 ✅
+- Sprint 4: @clawid/cli@0.4.0 ✅
 
 ---
 
-*Last updated: 2026-02-03*
+## Release Checklist (MANDATORY)
+
+**Before ANY npm publish or production deployment:**
+
+### Pre-Release Testing
+
+- [ ] `pnpm test` - All tests pass (currently 77)
+- [ ] `pnpm build` - Build succeeds without errors
+- [ ] Manual CLI test: `clawid init`, `clawid sign`, `clawid verify`
+- [ ] Manual CLI test: `clawid register` (if applicable)
+
+### Post-Deployment E2E Testing
+
+- [ ] Test CLI installation: `npx @clawid/cli@latest --version`
+- [ ] Test API endpoints on production:
+  - [ ] POST /api/v1/skills/register
+  - [ ] GET /api/v1/publisher/:did/skills
+- [ ] Test web verification at https://www.clawid.dev/verify
+- [ ] Verify shareable receipt URLs work
+
+### Sign-Off
+
+- [ ] All pre-release tests pass
+- [ ] All post-deployment tests pass
+- [ ] No regressions found
+- [ ] AI-CONTEXT.md updated with release notes
+
+**DO NOT mark release complete until all boxes checked.**
+
+---
+
+*Last updated: 2026-02-04*
