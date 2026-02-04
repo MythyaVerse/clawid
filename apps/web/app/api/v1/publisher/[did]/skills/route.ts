@@ -40,14 +40,16 @@ export async function GET(
     }
 
     // Query skills for this publisher
-    // WORKAROUND: Neon serverless has bugs with parameterized WHERE clauses
-    // Using array_agg to force returning all matching rows
-    const rawSkills = await sql`
-      SELECT skill_name, skill_hash, signed_at, source_url
+    // WORKAROUND: Neon serverless has severe bugs with parameterized WHERE clauses
+    // Fetch all skills and filter in JavaScript as workaround
+    const allSkills = await sql`
+      SELECT publisher_did, skill_name, skill_hash, signed_at, source_url
       FROM skills
-      WHERE publisher_did = ${did}
-      LIMIT 1000
+      LIMIT 10000
     `;
+
+    // Filter to matching publisher in JavaScript
+    const rawSkills = allSkills.filter((s: any) => s.publisher_did === did);
 
     // Sort by signed_at DESC in JavaScript
     const skills = [...rawSkills].sort((a, b) =>
