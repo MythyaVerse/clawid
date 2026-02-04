@@ -2,8 +2,8 @@
 
 ## Project Snapshot
 - **Purpose:** ClawID - Cryptographic verification for AI agent skills/plugins. Provides integrity and provenance verification (NOT safety audits).
-- **Current State:** ✅ SPRINT 3 COMPLETE - Shareable receipts + library API
-- **Key Entry Points:** `packages/cli/src/index.ts`, `packages/cli/src/api.ts`, `apps/web/app/page.tsx`, `apps/web/app/verify/page.tsx`
+- **Current State:** ✅ SPRINT 4 COMPLETE - Publisher Skill Registry + CLI auto-register
+- **Key Entry Points:** `packages/cli/src/index.ts`, `packages/cli/src/api.ts`, `apps/web/app/page.tsx`, `apps/web/app/verify/page.tsx`, `apps/web/app/api/v1/`
 
 ## How to Run
 - **Install:** `pnpm install`
@@ -38,7 +38,7 @@
 | Service | Purpose | Status | Account |
 |---------|---------|--------|---------|
 | GitHub | Code hosting | ✅ Ready | MythyaVerse/clawid |
-| npm | Package registry | ✅ Published | @clawid/cli@0.3.0 |
+| npm | Package registry | ✅ Published | @clawid/cli@0.4.0 |
 | Vercel | Web hosting | ✅ Live | https://clawid.dev |
 | GitHub API | Gist verification | ✅ Working | GITHUB_TOKEN configured |
 | Waitlist (Tally) | Signups | ✅ Configured | Email form on landing page |
@@ -51,7 +51,22 @@
 - **Branch:** production (br-ancient-base-ahc68cp4)
 - **Region:** aws-us-east-1
 - **PostgreSQL:** v17
-- **Status:** ✅ Connected (empty, ready for skill registry schema)
+- **Status:** ✅ Connected with skill registry schema
+
+### Schema
+```sql
+CREATE TABLE skills (
+  id SERIAL PRIMARY KEY,
+  publisher_did VARCHAR(255) NOT NULL,
+  skill_name VARCHAR(255) NOT NULL,
+  skill_hash VARCHAR(100) NOT NULL,
+  signed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  source_url TEXT,
+  signature TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(publisher_did, skill_hash)
+);
+```
 
 ## Repo Structure (Planned)
 ```
@@ -132,59 +147,78 @@ clawid/
     - `canInstall` boolean added to verification results
     - API documented in README with usage examples
     - 77 tests passing (55 CLI + 22 web)
-    - @clawid/cli@0.3.0 ready for npm publish
+    - @clawid/cli@0.3.0 published to npm
+
+  - ✅ Sprint 4 COMPLETE:
+    - Publisher Skill Registry with Neon database
+    - POST /api/v1/skills/register endpoint (register signed skills)
+    - GET /api/v1/publisher/:did/skills endpoint (query publisher skills)
+    - CLI `--register` flag for auto-registration after signing
+    - CLI standalone `register` command
+    - Registry client in `packages/cli/src/lib/registry.ts`
+    - @clawid/cli@0.4.0 published to npm
+    - Deployed to production at https://clawid.dev
 
 ---
 
 ## HANDOFF (for the next agent)
 
 ### Current Objective
-Sprint 3 COMPLETE. Shareable receipts and library API implemented.
+Sprint 4 COMPLETE. Publisher Skill Registry fully operational.
 
-### What Was Delivered (Sprint 3)
-- ✅ **T37: Shareable Verification Receipt URLs**
-  - `generateReceiptUrl()` creates shareable URL with verification data in hash
-  - "Copy Verification Link" button appears after successful verification
-  - Receipt mode displays when opening shared URL (shows saved result)
-  - `parseReceiptFromUrl()` parses URL hash to restore receipt
-  - 12 new tests for receipt URL generation/parsing
+### What Was Delivered (Sprint 4)
+- ✅ **Database Schema**
+  - `skills` table in Neon with publisher_did, skill_name, skill_hash, signature
+  - UNIQUE constraint on (publisher_did, skill_hash) allows re-registration
 
-- ✅ **Library API for Hook Integration**
-  - `packages/cli/src/api.ts` - clean entry point for programmatic use
-  - `verifySkill(zipPath, sigPath, options)` - verify local files
-  - `downloadAndVerify(url, sigUrl, options)` - download and verify remote
-  - `canInstall` boolean added to VerificationResult
-  - Types exported: VerificationResult, VerificationTier, VerifyOptions
-  - Package exports updated in package.json
-  - 13 new API tests
-  - README updated with library usage documentation
+- ✅ **API Endpoints**
+  - `POST /api/v1/skills/register` - register signed skills
+  - `GET /api/v1/publisher/:did/skills` - query all skills by publisher
 
-### Key Files (Sprint 3)
-- `apps/web/app/verify/receipt.ts` - receipt URL utilities
-- `apps/web/app/verify/page.tsx` - updated with receipt mode UI
-- `packages/cli/src/api.ts` - library API entry point
-- `packages/cli/src/lib/verification.ts` - added proofVerified to error returns
-- `packages/cli/README.md` - library API documentation
+- ✅ **CLI Integration**
+  - `--register` flag on `sign` command
+  - Auto-prompt after signing (unless `--no-register-prompt`)
+  - Standalone `register` command for previously signed skills
+  - Registry client in `packages/cli/src/lib/registry.ts`
+
+### Key Files (Sprint 4)
+- `apps/web/lib/db.ts` - Neon database client
+- `apps/web/app/api/v1/skills/register/route.ts` - registration endpoint
+- `apps/web/app/api/v1/publisher/[did]/skills/route.ts` - query endpoint
+- `packages/cli/src/lib/registry.ts` - CLI registry client
+- `packages/cli/src/index.ts` - updated with register commands
 
 ### Test Coverage
-- `packages/cli/src/api.test.ts` - 13 tests (NEW)
+- `packages/cli/src/api.test.ts` - 13 tests
 - `packages/cli/src/lib/proof.test.ts` - 20 tests
 - `packages/cli/src/lib/proof-verification.test.ts` - 13 tests
 - `packages/cli/src/lib/wrap.test.ts` - 9 tests
-- `apps/web/app/verify/verify.test.ts` - 22 tests (+12 new)
+- `apps/web/app/verify/verify.test.ts` - 22 tests
 - **Total: 77 tests passing**
 
 ### Current Blockers
-None - Sprint 3 complete, ready for deploy
+None - Sprint 4 complete
 
 ### What to Do Next
-1. [x] Deploy web app to Vercel - DONE (https://www.clawid.dev)
-2. [x] Publish @clawid/cli@0.3.0 to npm - DONE
-3. [ ] Test shareable receipt URLs on production
+1. [ ] Test CLI registration on production
+2. [ ] Consider adding web UI for browsing publisher skills
+3. [ ] Key rotation and revocation (US-11)
 
-### Remaining Tasks (Sprint 4+)
-- US-11: Key rotation and revocation (T38-T41)
-- US-12: Supabase registry + /registry page (T42-T47)
+### API Examples
+```bash
+# Register a skill
+curl -X POST https://clawid.dev/api/v1/skills/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "publisher_did": "did:key:z6Mk...",
+    "skill_name": "my-skill",
+    "skill_hash": "sha256:abc123...",
+    "signature": "..."
+  }'
+
+# Query publisher skills
+curl https://clawid.dev/api/v1/publisher/did%3Akey%3Az6Mk.../skills
+```
 
 ### Verified Publisher Identity
 - GitHub handle: `binarycache`
@@ -192,22 +226,5 @@ None - Sprint 3 complete, ready for deploy
 - Public key: `fc931e2c3c0a729fd8c931634ad032d5e648b5dc5e66aecc090f32a1398844e8`
 - Proof gist: https://gist.github.com/binarycache/578dd0a913fd80e8c70ec9fd15d6659a
 
-### Library API Usage Example
-```typescript
-import { verifySkill, downloadAndVerify } from '@clawid/cli';
-
-// Verify local files
-const result = await verifySkill('./skill.zip', './skill.clawid-sig.json');
-if (result.canInstall) {
-  console.log('Safe to install');
-}
-
-// Verify remote skill
-const remote = await downloadAndVerify('https://example.com/skill.zip');
-if (remote.canInstall) {
-  // Install from remote.zipPath
-}
-```
-
 ### If Time Is Tight
-Core functionality complete. Deploy and publish first, then test manually.
+Core functionality complete. @clawid/cli@0.4.0 published and live.
