@@ -385,7 +385,7 @@
 | T54 | GET /api/v1/publisher/:did/skills endpoint | ✅ | Query publisher skills |
 | T55 | CLI `--register` flag on sign command | ✅ | Auto-register after signing |
 | T56 | CLI standalone `register` command | ✅ | Register previously signed skills |
-| T57 | Fix Neon ORDER BY bug | ✅ | Sort in JS as workaround |
+| T57 | Fix Neon serverless bug | ✅ | Switched from neon() HTTP to Pool WebSocket |
 
 ### Definition of Done (Sprint 4)
 
@@ -412,7 +412,7 @@
 - Sprint 1: @clawid/cli@0.1.0 ✅
 - Sprint 2: @clawid/cli@0.2.0 ✅
 - Sprint 3: @clawid/cli@0.3.0 ✅
-- Sprint 4: @clawid/cli@0.4.0 ✅
+- Sprint 4: @clawid/cli@0.4.0 → 0.4.1 ✅ (bug fix)
 
 ---
 

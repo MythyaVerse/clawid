@@ -38,7 +38,7 @@
 | Service | Purpose | Status | Account |
 |---------|---------|--------|---------|
 | GitHub | Code hosting | ✅ Ready | MythyaVerse/clawid |
-| npm | Package registry | ✅ Published | @clawid/cli@0.4.0 |
+| npm | Package registry | ✅ Published | @clawid/cli@0.4.1 |
 | Vercel | Web hosting | ✅ Live | https://clawid.dev |
 | GitHub API | Gist verification | ✅ Working | GITHUB_TOKEN configured |
 | Waitlist (Tally) | Signups | ✅ Configured | Email form on landing page |

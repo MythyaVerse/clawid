@@ -10,9 +10,9 @@
 
 > **⚠️ NOT A SAFETY AUDIT** — ClawID verifies that a skill bundle hasn't been tampered with and identifies who signed it. It does NOT audit code for malware or security vulnerabilities.
 
-## What's New in v0.4.0
+## What's New in v0.4.1
 
-### Publisher Skill Registry
+### Publisher Skill Registry (with Bug Fix)
 ClawID now tracks which skills each publisher has signed. After signing, your skill is registered to the public registry:
 
 ```bash
