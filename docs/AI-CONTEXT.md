@@ -189,7 +189,7 @@ clawid/
 ## HANDOFF (for the next agent)
 
 ### Current Objective
-Sprint 4 COMPLETE. Publisher Skill Registry fully operational.
+Sprint 4 COMPLETE. Publisher Skill Registry fully operational after fixing critical Neon bug.
 
 ### What Was Delivered (Sprint 4)
 - ✅ **Database Schema**
@@ -199,6 +199,7 @@ Sprint 4 COMPLETE. Publisher Skill Registry fully operational.
 - ✅ **API Endpoints**
   - `POST /api/v1/skills/register` - register signed skills
   - `GET /api/v1/publisher/:did/skills` - query all skills by publisher
+  - **CRITICAL FIX:** Switched from `neon()` HTTP client to `Pool` WebSocket connection
 
 - ✅ **CLI Integration**
   - `--register` flag on `sign` command
