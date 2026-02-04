@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql, type PublisherSkillsResponse } from '@/lib/db';
 
+// Force dynamic rendering (no caching)
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/v1/publisher/:did/skills
  *
@@ -62,7 +65,11 @@ export async function GET(
       total: skills.length,
     };
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
+      },
+    });
 
   } catch (error: any) {
     console.error('Get publisher skills error:', error);
